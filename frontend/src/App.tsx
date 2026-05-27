@@ -8,115 +8,124 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app">
 
-      <div className="ticks"></div>
+      <header className="navbar">
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <h2>IRONLOG</h2>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+        <nav>
+
+          <a href="#">Home</a>
+
+          <a href="#">Workouts</a>
+
+          <a href="#">Progress</a>
+
+        </nav>
+
+      </header>
+
+      <main>
+
+        <section className="hero">
+
+          <div className="hero-text">
+
+            <p className="tagline">Workout tracking made simple</p>
+
+            <h1>Track your lifts. Build your progress.</h1>
+
+            <p className="description">
+
+              IRONLOG is a fitness tracking app that helps gym users record
+
+              workouts, view exercise history, and monitor their strength
+
+              progress over time.
+
+            </p>
+
+            <div className="hero-buttons">
+
+              <button>Login</button>
+
+              <button className="secondary-button">Sign Up</button>
+
+            </div>
+
+          </div>
+
+          <div className="hero-card">
+
+            <h3>Today&apos;s Workout</h3>
+
+            <div className="workout-item">
+
+              <span>Bench Press</span>
+
+              <strong>3 × 8</strong>
+
+            </div>
+
+            <div className="workout-item">
+
+              <span>Squat</span>
+
+              <strong>4 × 6</strong>
+
+            </div>
+
+            <div className="workout-item">
+
+              <span>Pull Ups</span>
+
+              <strong>3 × 10</strong>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <section className="features">
+
+          <h2>Key Features</h2>
+
+          <div className="feature-grid">
+
+            <div className="feature-card">
+
+              <h3>Workout Logging</h3>
+
+              <p>Record exercises, sets, reps, and weights in one place.</p>
+
+            </div>
+
+            <div className="feature-card">
+
+              <h3>Exercise History</h3>
+
+              <p>View previous sessions and compare your past performance.</p>
+
+            </div>
+
+            <div className="feature-card">
+
+              <h3>Progress Tracking</h3>
+
+              <p>Track strength improvements across weeks and months.</p>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </main>
+
+    </div>
+  );
 }
 
 export default App
