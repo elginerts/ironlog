@@ -6,7 +6,6 @@ import HeroSection from "./components/HeroSection";
 import FeaturesSection from "./components/FeaturesSection";
 import SignUpModal from "./components/SignUpModal";
 
-
 function App() {
   const [showSignUp, setShowSignUp] = useState(false);
 
@@ -15,10 +14,8 @@ function App() {
       <Navbar />
 
       <main>
-
         <HeroSection onSignUpClick={() => setShowSignUp(true)} />
         <FeaturesSection />
-
       </main>
 
       {showSignUp && (
