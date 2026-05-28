@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import "./App.css";
 import { supabase } from "./utils/supabase";
 
@@ -8,11 +8,20 @@ import FeaturesSection from "./components/FeaturesSection";
 import SignUpModal from "./components/SignUpModal";
 import LoginModal from "./components/LoginModal";
 
-
 function App() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  function openSignUp() {
+    setShowLogin(false);
+    setShowSignUp(true);
+  }
+
+  function openLogin() {
+    setShowSignUp(false);
+    setShowLogin(true);
+  }
 
   async function handleLogout() {
     const { error } = await supabase.auth.signOut();
@@ -30,29 +39,29 @@ function App() {
       <Navbar />
 
       <main>
-        <HeroSection 
-          userEmail={userEmail}          
-          onSignUpClick={() => setShowSignUp(true)} 
-          onLoginClick={() => setShowLogin(true)}
+        <HeroSection
+          userEmail={userEmail}
+          onSignUpClick={openSignUp}
+          onLoginClick={openLogin}
           onLogoutClick={handleLogout}
         />
+
         <FeaturesSection />
       </main>
 
       {showSignUp && (
-          <SignUpModal onClose={() => setShowSignUp(false)} />
-        )}
-      
+        <SignUpModal onClose={() => setShowSignUp(false)} />
+      )}
+
       {showLogin && (
-          <LoginModal 
-            onClose={() => setShowLogin(false)} 
-            onLoginSuccess={(email) => {
-              setUserEmail(email);
-              setShowLogin(false);
-            }}
-          
-          />
-        )}        
+        <LoginModal
+          onClose={() => setShowLogin(false)}
+          onLoginSuccess={(email) => {
+            setUserEmail(email);
+            setShowLogin(false);
+          }}
+        />
+      )}
     </div>
   );
 }
