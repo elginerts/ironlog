@@ -1,18 +1,19 @@
 import { useState } from 'react';
 import { supabase } from "../utils/supabase";
 
-interface SignUpModalProps {
+interface LoginModalProps {
   onClose: () => void;
+  onLoginSuccess: (email: string) => void;
 }
 
-function SignUpModal({ onClose }: SignUpModalProps) {
+function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  async function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
+  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
 
     event.preventDefault();
 
@@ -20,7 +21,7 @@ function SignUpModal({ onClose }: SignUpModalProps) {
     setErrorMessage("");
     setSuccessMessage("");
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -32,8 +33,12 @@ function SignUpModal({ onClose }: SignUpModalProps) {
       return;
     }
 
-    console.log("Signup data:", data);
-    setSuccessMessage("Account created! You may proceed to Login.");
+    console.log("Login data:", data);
+    setSuccessMessage("Login successful!");
+
+    if (data.user.email) {
+      onLoginSuccess(data.user.email);
+    }
   } 
 
 
@@ -45,10 +50,10 @@ function SignUpModal({ onClose }: SignUpModalProps) {
           ×
         </button>
 
-        <h2>Create your account</h2>
-        <p>Sign up to start tracking your workouts with IRONLOG.</p>
+        <h2>Login to your account</h2>
+        <p>Welcome back to IRONLOG!</p>
 
-        <form onSubmit={handleSignUp}>
+        <form onSubmit={handleLogin}>
           <label>Email</label>
           <input
             type="email"
@@ -71,7 +76,7 @@ function SignUpModal({ onClose }: SignUpModalProps) {
           {successMessage && <p className="success-message">{successMessage}</p>}
 
           <button className="modal-button" type="submit" disabled={loading}>
-            {loading ? "Signing Up..." : "Sign Up"}
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>
@@ -80,4 +85,4 @@ function SignUpModal({ onClose }: SignUpModalProps) {
   );
 }
 
-export default SignUpModal;
+export default LoginModal;
