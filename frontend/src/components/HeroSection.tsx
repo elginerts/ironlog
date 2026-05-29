@@ -1,8 +1,11 @@
 interface HeroSectionProps {
+  userEmail: string | null;
   onSignUpClick: () => void;
+  onLoginClick: () => void;
+  onLogoutClick: () => void;
 }
 
-function HeroSection({ onSignUpClick }: HeroSectionProps) {
+function HeroSection({ userEmail, onSignUpClick, onLoginClick, onLogoutClick}: HeroSectionProps) {
   return (
     <section className="hero">
       <div className="hero-text">
@@ -15,8 +18,24 @@ function HeroSection({ onSignUpClick }: HeroSectionProps) {
         </p>
 
         <div className="hero-buttons">
-          <button onClick={onSignUpClick}>Sign Up</button>
-          <button className="secondary-button">Login</button>
+          {userEmail ? (
+            <>
+              <p className="logged-in-text">Logged in as {userEmail}</p>
+              <button className="secondary-button" onClick={onLogoutClick}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={onSignUpClick}>Sign Up</button>
+              <button 
+                className="secondary-button"
+                onClick={onLoginClick}
+              >
+                Login
+              </button>
+            </>
+          )}
         </div>
       </div>
 
