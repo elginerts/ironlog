@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 * {
   box-sizing: border-box;
 }
@@ -245,42 +244,38 @@ button {
   font-size: 24px;
   border: none;
   cursor: pointer;
-=======
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f4f5;
 }
 
-#root {
-  min-height: 100vh;
+.workout-form {
+  display: grid;
+  gap: 12px;
 }
 
-.app {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 32px 20px;
-}
-
-.card {
-  background: white;
-  border-radius: 18px;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-button {
-  background: black;
-  color: white;
-  border: none;
-  border-radius: 999px;
-  padding: 12px 18px;
+.workout-form input {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
   font-size: 15px;
-  cursor: pointer;
 }
 
-li {
-  margin-bottom: 8px;
->>>>>>> c987572 (Add initial dashboard UI)
+.workout-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.workout-card {
+  background: white;
+  border: 1px solid #eee;
+  padding: 16px;
+  border-radius: 16px;
+}
+
+.workout-card h3 {
+  margin: 0 0 6px;
+}
+
+.workout-card p {
+  margin: 4px 0;
+  color: #555;
 }
