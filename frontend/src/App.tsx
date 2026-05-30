@@ -30,11 +30,6 @@ function App() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    alert("Please log in before saving a workout.");
-    return;
-  }
-
   const { error } = await supabase.from("workouts").insert({
     user_id: user.id,
     exercise_name: workout.exerciseName,
