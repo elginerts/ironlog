@@ -39,6 +39,9 @@ function App() {
     return;
   }
 
+  setWorkouts([workout, ...workouts]);
+
+
   alert("Workout saved!");
 }
   async function handleLogout() {
