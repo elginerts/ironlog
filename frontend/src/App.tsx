@@ -26,12 +26,7 @@ function App() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
   async function addWorkout(workout: Workout) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
   const { error } = await supabase.from("workouts").insert({
-    user_id: user.id,
     exercise_name: workout.exerciseName,
     sets: workout.sets,
     reps: workout.reps,
@@ -46,7 +41,6 @@ function App() {
 
   alert("Workout saved!");
 }
-
   async function handleLogout() {
     const { error } = await supabase.auth.signOut();
 
