@@ -245,3 +245,37 @@ button {
   border: none;
   cursor: pointer;
 }
+
+.workout-form {
+  display: grid;
+  gap: 12px;
+}
+
+.workout-form input {
+  padding: 12px 14px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+.workout-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.workout-card {
+  background: white;
+  border: 1px solid #eee;
+  padding: 16px;
+  border-radius: 16px;
+}
+
+.workout-card h3 {
+  margin: 0 0 6px;
+}
+
+.workout-card p {
+  margin: 4px 0;
+  color: #555;
+}
