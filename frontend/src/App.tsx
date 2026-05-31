@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import "./App.css";
 import { supabase } from "./utils/supabase";
 
@@ -25,10 +25,25 @@ function App() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
-  function addWorkout(workout: Workout) {
-  setWorkouts([workout, ...workouts]);
+  async function addWorkout(workout: Workout) {
+  const { error } = await supabase.from("workouts").insert({
+    exercise_name: workout.exerciseName,
+    sets: workout.sets,
+    reps: workout.reps,
+    weight: workout.weight,
+  });
+
+  if (error) {
+    console.log("Add workout error:", error.message);
+    alert("Could not save workout.");
+    return;
   }
 
+  setWorkouts([workout, ...workouts]);
+
+
+  alert("Workout saved!");
+}
   async function handleLogout() {
     const { error } = await supabase.auth.signOut();
 
