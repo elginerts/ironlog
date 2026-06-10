@@ -48,42 +48,51 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
   }, []);
 
   async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
+  event.preventDefault();
 
-    if (!exerciseName || !sets || !reps || !weight) {
-      alert("Please fill in all fields");
+  if (!exerciseName || !sets || !reps || !weight) {
+    alert("Please fill in all fields");
+    return;
+  }
+
+  setIsSaving(true);
+
+  try {
+    const wasSaved = await onAddWorkout({
+      exerciseName,
+      sets: Number(sets),
+      reps: Number(reps),
+      weight: Number(weight),
+      date: new Date().toLocaleDateString(),
+    });
+
+    if (!wasSaved) {
       return;
     }
 
-    setIsSaving(true);
+    const { error } = await supabase
+      .from("exercises")
+      .upsert([{ name: exerciseName }], { onConflict: "name" });
 
-    try {
-      const wasSaved = await onAddWorkout({
-        exerciseName,
-        sets: Number(sets),
-        reps: Number(reps),
-        weight: Number(weight),
-        date: new Date().toLocaleDateString(),
-      });
-
-      if (!wasSaved) {
-        return;
-      }
-
-      try {
-        await supabase.from("exercises").upsert([{ name: exerciseName }], { onConflict: "name" });
-      } catch (err) {
-        console.error("Failed to save exercise name:", err);
-      }
-
-      setExerciseName("");
-      setSets("");
-      setReps("");
-      setWeight("");
-    } finally {
-      setIsSaving(false);
+    if (error) {
+      console.log("Exercise save error:", error.message);
+      return;
     }
+
+    setSuggestions((prev) =>
+      prev.includes(exerciseName) ? prev : [exerciseName, ...prev]
+    );
+
+    setExerciseName("");
+    setSets("");
+    setReps("");
+    setWeight("");
+  } catch (err) {
+    console.error("Failed to save workout:", err);
+  } finally {
+    setIsSaving(false);
   }
+}
 
   return (
     <section className="card">
