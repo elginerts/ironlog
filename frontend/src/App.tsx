@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import "./App.css";
 import { supabase } from "./utils/supabase";
 
@@ -25,25 +25,25 @@ function App() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [workouts, setWorkouts] = useState<Workout[]>([]);
 
-  async function addWorkout(workout: Workout) {
-  const { error } = await supabase.from("workouts").insert({
-    exercise_name: workout.exerciseName,
-    sets: workout.sets,
-    reps: workout.reps,
-    weight: workout.weight,
-  });
+  async function addWorkout(workout: Workout): Promise<boolean> {
+    const { error } = await supabase.from("workouts").insert({
+      exercise_name: workout.exerciseName,
+      sets: workout.sets,
+      reps: workout.reps,
+      weight: workout.weight,
+    });
 
-  if (error) {
-    console.log("Add workout error:", error.message);
-    alert("Could not save workout.");
-    return;
+    if (error) {
+      console.log("Add workout error:", error.message);
+      alert("Could not save workout.");
+      return false;
+    }
+
+    setWorkouts((currentWorkouts) => [workout, ...currentWorkouts]);
+
+    alert("Workout saved!");
+    return true;
   }
-
-  setWorkouts([workout, ...workouts]);
-
-
-  alert("Workout saved!");
-}
   async function handleLogout() {
     const { error } = await supabase.auth.signOut();
 
