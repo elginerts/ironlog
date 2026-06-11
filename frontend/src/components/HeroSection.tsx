@@ -1,5 +1,8 @@
+import type { Workout } from "./types";
+
 interface HeroSectionProps {
   userEmail: string | null;
+  workouts: Workout[];
   onSignUpClick: () => void;
   onLoginClick: () => void;
   onLogoutClick: () => void;
