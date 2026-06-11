@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import "./App.css";
 import { supabase } from "./utils/supabase";
-import { Workout } from './components/types';
 
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
@@ -10,6 +9,8 @@ import SignUpModal from "./components/SignUpModal";
 import LoginModal from "./components/LoginModal";
 import WorkoutForm from "./components/WorkoutForm";
 import WorkoutLog from "./components/WorkoutLog";
+import type { Workout } from './components/types';
+
 
 
 
