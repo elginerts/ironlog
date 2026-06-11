@@ -279,3 +279,32 @@ button {
   margin: 4px 0;
   color: #555;
 }
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-links button {
+  background: transparent;
+  color: #333;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.nav-links button:hover {
+  color: #d1410c;
+}
+
+.nav-links .active-nav {
+  color: #d1410c;
+  font-weight: 700;
+}
