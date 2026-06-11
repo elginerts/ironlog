@@ -8,7 +8,13 @@ interface HeroSectionProps {
   onLogoutClick: () => void;
 }
 
-function HeroSection({ userEmail, onSignUpClick, onLoginClick, onLogoutClick}: HeroSectionProps) {
+function HeroSection({
+  userEmail,
+  workouts,
+  onSignUpClick,
+  onLoginClick,
+  onLogoutClick,
+}: HeroSectionProps) {
   return (
     <section className="hero">
       <div className="hero-text">
@@ -45,20 +51,18 @@ function HeroSection({ userEmail, onSignUpClick, onLoginClick, onLogoutClick}: H
       <div className="hero-card">
         <h3>Today&apos;s Workout</h3>
 
-        <div className="workout-item">
-          <span>Bench Press</span>
-          <strong>3 × 8</strong>
-        </div>
-
-        <div className="workout-item">
-          <span>Squat</span>
-          <strong>4 × 6</strong>
-        </div>
-
-        <div className="workout-item">
-          <span>Pull Ups</span>
-          <strong>3 × 10</strong>
-        </div>
+        {workouts.length === 0 ? (
+          <p>No workouts logged yet.</p>
+        ) : (
+          workouts.slice(0, 3).map((workout, index) => (
+            <div className="workout-item" key={index}>
+              <span>{workout.exerciseName}</span>
+              <strong>
+                {workout.sets} × {workout.reps}
+              </strong>
+            </div>
+          ))
+        )}
       </div>
     </section>
   );
