@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
-
-type Workout = {
-  exerciseName: string;
-  sets: number;
-  reps: number;
-  weight: number;
-  date: string;
-};
+import type { Workout } from "./types";
 
 type WorkoutFormProps = {
   onAddWorkout: (workout: Workout) => Promise<boolean>;
