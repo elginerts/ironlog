@@ -43,6 +43,19 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
   async function handleSubmit(event: React.FormEvent) {
   event.preventDefault();
 
+  console.log("Workout form submitted");
+  console.log("Form values:", {
+
+    exerciseName,
+
+    sets,
+
+    reps,
+
+    weight,
+
+  });
+
   if (!exerciseName || !sets || !reps || !weight) {
     alert("Please fill in all fields");
     return;
@@ -56,7 +69,7 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
       sets: Number(sets),
       reps: Number(reps),
       weight: Number(weight),
-      date: new Date().toLocaleDateString(),
+      date: new Date().toISOString().split("T")[0],
     });
 
     if (!wasSaved) {

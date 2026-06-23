@@ -17,25 +17,50 @@ function App() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [currentPage, setCurrentPage] = useState<string>("home");
 
-  async function addWorkout(workout: Workout): Promise<boolean> {
-    const { error } = await supabase.from("workouts").insert({
+async function addWorkout(workout: Workout): Promise<boolean> {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  console.log("Current user:", user);
+
+  if (userError) {
+    console.log("Get user error:", userError);
+    alert(userError.message);
+    return false;
+  }
+
+  if (!user) {
+    alert("You must be logged in to save a workout.");
+    return false;
+  }
+
+  const { data, error } = await supabase
+    .from("workouts")
+    .insert({
+      user_id: user.id,
       exercise_name: workout.exerciseName,
       sets: workout.sets,
       reps: workout.reps,
       weight: workout.weight,
-    });
+      workout_date: workout.date,
+    })
+    .select();
 
-    if (error) {
-      console.log("Add workout error:", error.message);
-      alert("Could not save workout.");
-      return false;
-    }
-
-    setWorkouts((currentWorkouts) => [workout, ...currentWorkouts]);
-
-    alert("Workout saved!");
-    return true;
+  if (error) {
+    console.log("Add workout error:", error);
+    alert(error.message);
+    return false;
   }
+
+  console.log("Saved workout:", data);
+
+  setWorkouts((currentWorkouts) => [workout, ...currentWorkouts]);
+
+  alert("Workout saved!");
+  return true;
+}
 
   async function handleLogout() {
     const { error } = await supabase.auth.signOut();
