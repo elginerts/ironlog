@@ -13,6 +13,8 @@ body {
   min-height: 100vh;
 }
 
+/* Navbar */
+
 .navbar {
   height: 72px;
   padding: 0 64px;
@@ -23,27 +25,62 @@ body {
   border-bottom: 1px solid #e5e5e5;
 }
 
-.navbar h2 {
+.navbar h1 {
   color: #c2410c;
   letter-spacing: 1px;
+  margin: 0;
 }
 
-.navbar nav {
+.nav-links {
   display: flex;
-  gap: 28px;
+  gap: 16px;
 }
 
-.navbar a {
-  text-decoration: none;
+.nav-links button {
+  background: transparent;
   color: #333;
-  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 8px;
 }
+
+.nav-links button:hover {
+  color: #c2410c;
+  background: #fff4ef;
+}
+
+.nav-links .active-nav {
+  color: #c2410c;
+  background: #fff4ef;
+  font-weight: 700;
+}
+
+/* Main layout */
 
 main {
   max-width: 1150px;
   margin: 0 auto;
   padding: 64px 24px;
 }
+
+/* General cards */
+
+.card {
+  background: white;
+  padding: 28px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  margin-bottom: 28px;
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+/* Hero section */
 
 .hero {
   display: grid;
@@ -89,10 +126,18 @@ button {
   cursor: pointer;
 }
 
+button:hover {
+  background: #9a3412;
+}
+
 .secondary-button {
   background: white;
   color: #c2410c;
   border: 1px solid #c2410c;
+}
+
+.secondary-button:hover {
+  background: #fff4ef;
 }
 
 .hero-card {
@@ -106,6 +151,8 @@ button {
   margin-top: 0;
   margin-bottom: 20px;
 }
+
+/* Home workout preview */
 
 .workout-item {
   display: flex;
@@ -125,6 +172,8 @@ button {
 .workout-item strong {
   color: #c2410c;
 }
+
+/* Features section */
 
 .features {
   margin-top: 88px;
@@ -157,28 +206,7 @@ button {
   line-height: 1.5;
 }
 
-@media (max-width: 800px) {
-  .navbar {
-    padding: 0 24px;
-  }
-
-  .navbar nav {
-    display: none;
-  }
-
-  .hero {
-    grid-template-columns: 1fr;
-  }
-
-  .hero h1 {
-    font-size: 40px;
-  }
-
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* Modals */
 
 .modal-overlay {
   position: fixed;
@@ -226,7 +254,6 @@ button {
   border: 1px solid #ddd;
   border-radius: 10px;
   font-size: 16px;
-
 }
 
 .modal-button {
@@ -246,6 +273,13 @@ button {
   cursor: pointer;
 }
 
+.close-button:hover {
+  background: transparent;
+  color: #c2410c;
+}
+
+/* Workout form */
+
 .workout-form {
   display: grid;
   gap: 12px;
@@ -257,6 +291,8 @@ button {
   border-radius: 12px;
   font-size: 15px;
 }
+
+/* Workout log */
 
 .workout-list {
   display: grid;
@@ -280,31 +316,115 @@ button {
   color: #555;
 }
 
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 32px;
+.share-button {
+  margin-top: 12px;
+  padding: 10px 16px;
+  font-size: 14px;
 }
 
-.nav-links {
+/* Social feed */
+
+.feed-header {
+  margin-bottom: 24px;
+}
+
+.feed-header h2 {
+  margin-bottom: 8px;
+}
+
+.feed-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.feed-list {
   display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
-.nav-links button {
-  background: transparent;
+.feed-post {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.feed-post-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.feed-user {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.feed-date {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.feed-caption {
+  margin: 8px 0 12px;
+  font-weight: 500;
   color: #333;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
 }
 
-.nav-links button:hover {
-  color: #d1410c;
+.feed-exercise {
+  margin: 8px 0;
+  color: #1f2937;
 }
 
-.nav-links .active-nav {
-  color: #d1410c;
-  font-weight: 700;
+.feed-details {
+  margin: 0;
+  color: #374151;
+}
+
+/* Responsive */
+
+@media (max-width: 800px) {
+  .navbar {
+    height: auto;
+    padding: 20px 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  main {
+    padding: 40px 20px;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hero h1 {
+    font-size: 40px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .feed-post-top {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
 }
