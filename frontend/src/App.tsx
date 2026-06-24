@@ -10,6 +10,8 @@ import LoginModal from "./components/LoginModal";
 import WorkoutForm from "./components/WorkoutForm";
 import WorkoutLog from "./components/WorkoutLog";
 import type { Workout } from './components/types';
+import ProgressPage from './pages/ProgressPage';
+import HistoryPage from './pages/HistoryPage';
 
 type DBWorkoutRow = {
   exercise_name: string;
@@ -122,11 +124,13 @@ function App() {
 
       if (rows && rows.length > 0) {
         const mapped: Workout[] = rows.map((row: DBWorkoutRow) => ({
+          id: row.id,
           exerciseName: row.exercise_name,
           sets: row.sets ?? 0,
           reps: row.reps ?? 0,
           weight: row.weight ?? 0,
           date: row.workout_date ? new Date(row.workout_date).toLocaleDateString() : new Date(row.created_at).toLocaleDateString(),
+          dateIso: (row.workout_date ?? row.created_at) ? (row.workout_date ?? row.created_at).slice(0,10) : undefined,
         }));
 
         setWorkouts(mapped);
@@ -135,6 +139,23 @@ function App() {
       }
     } catch (err) {
       console.error('Error fetching workouts:', err);
+    }
+  }
+  
+  // Delete a workout by id and update local state
+  async function deleteWorkout(id: number): Promise<boolean> {
+    try {
+      const { error } = await supabase.from('workouts').delete().eq('id', id);
+      if (error) {
+        console.error('Failed to delete workout:', error.message);
+        return false;
+      }
+
+      setWorkouts((prev) => prev.filter((w) => w.id !== id));
+      return true;
+    } catch (err) {
+      console.error('Delete workout error:', err);
+      return false;
     }
   }
 
@@ -215,11 +236,16 @@ function App() {
           </>
         )}
 
+        {currentPage === "history" && (
+          <>
+            <HistoryPage workouts={workouts} onDelete={deleteWorkout} />
+          </>
+        )}
+
         {currentPage === "progress" && (
-          <section className="card">
-            <h2>Progress</h2>
-            <p>Your progress page will go here.</p>
-          </section>
+          <>
+            <ProgressPage workouts={workouts} />
+          </>
         )}
       </main>
 
@@ -230,7 +256,7 @@ function App() {
       {showLogin && (
         <LoginModal
           onClose={() => setShowLogin(false)}
-          onLoginSuccess={(email) => {
+          onLoginSuccess={(email: string) => {
             setUserEmail(email);
             setShowLogin(false);
           }}

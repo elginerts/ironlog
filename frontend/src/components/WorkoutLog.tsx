@@ -34,45 +34,70 @@ function WorkoutLog({ workouts, onEdit }: WorkoutLogProps) {
         <p>No workouts logged yet.</p>
       ) : (
         <div className="workout-list">
-          {workouts.map((workout) => (
-            <div className="workout-card" key={workout.id ?? workout.date}>
-              <h3>{workout.exerciseName}</h3>
-              <p>{workout.date}</p>
+          {(() => {
+            // group workouts by dateIso (YYYY-MM-DD) or fallback to date
+            const groups: Record<string, Workout[]> = {};
+            workouts.forEach((w) => {
+              const key = w.dateIso ?? w.date;
+              groups[key] = groups[key] || [];
+              groups[key].push(w);
+            });
 
-              {editingId === workout.id ? (
-                <div className="workout-edit">
-                  <input
-                    type="number"
-                    value={draft.sets}
-                    onChange={(e) => setDraft((d) => ({ ...d, sets: Number(e.target.value) }))}
-                  />
-                  <input
-                    type="number"
-                    value={draft.reps}
-                    onChange={(e) => setDraft((d) => ({ ...d, reps: Number(e.target.value) }))}
-                  />
-                  <input
-                    type="number"
-                    value={draft.weight}
-                    onChange={(e) => setDraft((d) => ({ ...d, weight: Number(e.target.value) }))}
-                  />
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => void saveEdit(workout.id)}>Save</button>
-                    <button onClick={() => setEditingId(null)}>Cancel</button>
+            const keys = Object.keys(groups).sort((a, b) => (a < b ? 1 : -1));
+
+            return keys.map((key) => {
+              const items = groups[key];
+              // prefer canonical ISO date stored in `dateIso`, fall back to raw `date` or group key
+              const raw = items[0]?.dateIso ?? items[0]?.date ?? key;
+              // show YYYY-MM-DD (first 10 chars) when possible
+              const headerLabel = raw ? String(raw).slice(0, 10) : key;
+              return (
+                <div key={key} className="workout-day">
+                  <h3 style={{ marginTop: 0 }}>{headerLabel}</h3>
+                  <div style={{ display: 'grid', gap: 8 }}>
+                    {items.map((workout) => (
+                      <div className="workout-card" key={workout.id ?? workout.date}>
+                        <h4 style={{ margin: '2px 0' }}>{workout.exerciseName}</h4>
+
+                        {editingId === workout.id ? (
+                          <div className="workout-edit">
+                            <input
+                              type="number"
+                              value={draft.sets}
+                              onChange={(e) => setDraft((d) => ({ ...d, sets: Number(e.target.value) }))}
+                            />
+                            <input
+                              type="number"
+                              value={draft.reps}
+                              onChange={(e) => setDraft((d) => ({ ...d, reps: Number(e.target.value) }))}
+                            />
+                            <input
+                              type="number"
+                              value={draft.weight}
+                              onChange={(e) => setDraft((d) => ({ ...d, weight: Number(e.target.value) }))}
+                            />
+                            <div style={{ display: 'flex', gap: 8 }}>
+                              <button onClick={() => void saveEdit(workout.id)}>Save</button>
+                              <button onClick={() => setEditingId(null)}>Cancel</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <p style={{ margin: '4px 0' }}>
+                              {workout.sets} sets × {workout.reps} reps @ {workout.weight}kg
+                            </p>
+                            <div style={{ marginTop: 8 }}>
+                              <button onClick={() => startEdit(workout)}>Edit</button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ) : (
-                <>
-                  <p>
-                    {workout.sets} sets × {workout.reps} reps @ {workout.weight}kg
-                  </p>
-                  <div style={{ marginTop: 8 }}>
-                    <button onClick={() => startEdit(workout)}>Edit</button>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
+              );
+            });
+          })()}
         </div>
       )}
     </section>

@@ -15,6 +15,7 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
   const [weight, setWeight] = useState("");
+  const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   // No manual templates: exercises are auto-saved and appear in suggestions
@@ -61,7 +62,8 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
       sets: Number(sets),
       reps: Number(reps),
       weight: Number(weight),
-      date: new Date().toLocaleDateString(),
+      // convert local date (YYYY-MM-DD) to full ISO timestamp before sending
+      date: new Date(date).toISOString(),
     });
 
     if (!wasSaved) {
@@ -87,6 +89,8 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
     setSets("");
     setReps("");
     setWeight("");
+    // reset date to today after save
+    setDate(new Date().toISOString().split('T')[0]);
   } catch (err) {
     console.error("Failed to save workout:", err);
   } finally {
@@ -142,6 +146,15 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
           placeholder="Weight (kg)"
           value={weight}
           onChange={(e) => setWeight(e.target.value)}
+        />
+
+        <label className="sr-only">Workout date</label>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="date-input"
+          max={new Date().toISOString().split('T')[0]}
         />
 
         <button type="submit" disabled={isSaving}>

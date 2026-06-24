@@ -24,6 +24,13 @@ function Navbar({ currentPage, onPageChange }: NavbarProps) {
         </button>
 
         <button
+          className={currentPage === "history" ? "active-nav" : ""}
+          onClick={() => onPageChange("history")}
+        >
+          History
+        </button>
+
+        <button
           className={currentPage === "progress" ? "active-nav" : ""}
           onClick={() => onPageChange("progress")}
         >

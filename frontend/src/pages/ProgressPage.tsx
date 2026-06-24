@@ -1,8 +1,14 @@
-function ProgressPage() {
+import ProgressSection from '../components/ProgressSection';
+import type { Workout } from '../components/types';
+
+type ProgressPageProps = {
+  workouts: Workout[];
+};
+
+function ProgressPage({ workouts }: ProgressPageProps) {
   return (
     <section className="card">
-      <h2>Progress</h2>
-      <p>Your progress tracking page will go here.</p>
+      <ProgressSection workouts={workouts} />
     </section>
   );
 }
