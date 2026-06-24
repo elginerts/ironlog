@@ -1,16 +1,11 @@
-type Workout = {
-  exerciseName: string;
-  sets: number;
-  reps: number;
-  weight: number;
-  date: string;
-};
+import type { Workout } from "./types";
 
 type WorkoutLogProps = {
   workouts: Workout[];
+  onShareWorkout: (workout: Workout) => Promise<boolean>;
 };
 
-function WorkoutLog({ workouts }: WorkoutLogProps) {
+function WorkoutLog({ workouts, onShareWorkout}: WorkoutLogProps) {
   return (
     <section className="card">
       <h2>Workout Log</h2>
@@ -26,6 +21,13 @@ function WorkoutLog({ workouts }: WorkoutLogProps) {
               <p>
                 {workout.sets} sets × {workout.reps} reps @ {workout.weight}kg
               </p>
+
+              <button 
+                type="button"
+                onClick={() => {
+                  onShareWorkout(workout);}}>
+                Share to Feed
+              </button>              
             </div>
           ))}
         </div>
