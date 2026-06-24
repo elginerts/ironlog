@@ -1,4 +1,5 @@
 export type Workout = {
+  id?: number; // database id when available
   exerciseName: string;
   sets: number;
   reps: number;

@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 import type { Workout } from "./types";
 
+type ExerciseRow = {
+  name: string;
+};
+
 type WorkoutFormProps = {
   onAddWorkout: (workout: Workout) => Promise<boolean>;
 };
@@ -13,6 +17,7 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
   const [weight, setWeight] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  // No manual templates: exercises are auto-saved and appear in suggestions
 
   useEffect(() => {
     async function loadSuggestions() {
@@ -29,7 +34,7 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
         }
 
         if (data) {
-          const names = data.map((row: any) => row.name).filter(Boolean);
+          const names = data.map((row: ExerciseRow) => row.name).filter(Boolean);
           setSuggestions(Array.from(new Set(names)));
         }
       } catch (err) {
@@ -72,6 +77,8 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
       return;
     }
 
+    // We auto-save exercise names (upsert above) so they appear in suggestions.
+
     setSuggestions((prev) =>
       prev.includes(exerciseName) ? prev : [exerciseName, ...prev]
     );
@@ -113,6 +120,8 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
             ))}
           </div>
         )}
+
+        {/* Templates are auto-saved as exercise suggestions; no UI needed */}
 
         <input
           type="number"
