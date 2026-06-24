@@ -23,10 +23,7 @@ async function addWorkout(workout: Workout): Promise<boolean> {
     error: userError,
   } = await supabase.auth.getUser();
 
-  console.log("Current user:", user);
-
   if (userError) {
-    console.log("Get user error:", userError);
     alert(userError.message);
     return false;
   }
@@ -49,36 +46,72 @@ async function addWorkout(workout: Workout): Promise<boolean> {
     .select();
 
   if (error) {
-    console.log("Add workout error:", error);
     alert(error.message);
     return false;
   }
-
-  console.log("Saved workout:", data);
 
   setWorkouts((currentWorkouts) => [workout, ...currentWorkouts]);
 
   alert("Workout saved!");
   return true;
-}
-
-  async function handleLogout() {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      console.log("Logout error:", error.message);
-      return;
-    }
-
-    setUserEmail(null);
   }
 
-  function renderPage() {
+async function shareWorkout(workout: Workout): Promise<boolean> {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) {
+    alert(userError.message);
+    return false;
+  }
+
+  if (!user) {
+    alert("You must be logged in to share a workout.");
+    return false;
+  }
+
+  const { error } = await supabase
+    .from("workout_posts")
+    .insert({
+      user_id: user.id,
+      exercise_name: workout.exerciseName,
+      sets: workout.sets,
+      reps: workout.reps,
+      weight: workout.weight,
+      workout_date: workout.date,
+      caption: "Shared my workout!",
+      visibility: "public",
+    });
+
+  if (error) {
+    alert(error.message);
+    return false;
+  }
+
+  alert("Workout shared to feed!");
+  return true;
+}
+
+async function handleLogout() {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    return;
+  }
+
+  setUserEmail(null);
+
+}
+
+function renderPage() {
     if (currentPage === "workouts") {
       return (
         <WorkoutsPage
           workouts={workouts}
           onAddWorkout={addWorkout}
+          onShareWorkout={shareWorkout}
         />
       );
     }
@@ -96,9 +129,9 @@ async function addWorkout(workout: Workout): Promise<boolean> {
         onLogoutClick={handleLogout}
       />
     );
-  }
+}
 
-  return (
+return (
     <div className="app">
       <Navbar
         currentPage={currentPage}
