@@ -29,6 +29,14 @@ function Navbar({ currentPage, onPageChange }: NavbarProps) {
         >
           Progress
         </button>
+
+        <button
+          className={currentPage === "feed" ? "active-nav" : ""}
+          onClick={() => onPageChange("feed")}
+        >
+          Feed
+        </button>
+        
       </div>
     </nav>
   );

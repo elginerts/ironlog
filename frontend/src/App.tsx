@@ -9,6 +9,7 @@ import type { Workout } from "./components/types";
 import HomePage from "./pages/HomePage";
 import WorkoutsPage from "./pages/WorkoutsPage";
 import ProgressPage from "./pages/ProgressPage";
+import FeedPage from "./pages/FeedPage";
 
 function App() {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -118,6 +119,10 @@ function renderPage() {
 
     if (currentPage === "progress") {
       return <ProgressPage />;
+    }
+
+    if (currentPage === "feed") {
+      return <FeedPage />;
     }
 
     return (
