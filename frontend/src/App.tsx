@@ -24,10 +24,6 @@ type DBWorkoutRow = {
 function App() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  // We store `userEmail` as `string | null`. Supabase `user.email` can be
-  // `string | undefined` (e.g. some OAuth providers or incomplete profiles),
-  // so we normalize `undefined` -> `null` before storing in state. Use
-  // `user.id` (UUID) for auth/permission checks and RLS enforcement.
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [currentPage, setCurrentPage] = useState<string>("home");
