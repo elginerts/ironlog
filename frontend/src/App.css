@@ -1,117 +1,170 @@
-* {
-  box-sizing: border-box;
-}
+/* =========================
+   BASE44 DARK THEME - HOME PAGE
+   Paste at bottom of App.css
+========================= */
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f7f7f7;
-  color: #1f1f1f;
+  background: #09090b;
+  color: #f4f4f5;
 }
 
+/* App wrapper */
 .app {
   min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(16, 185, 129, 0.08), transparent 28%),
+    #09090b;
 }
 
+/* NAVBAR - dark Base44 style */
 .navbar {
-  height: 72px;
+  height: 76px;
   padding: 0 64px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  border-bottom: 1px solid #e5e5e5;
+  background: rgba(9, 9, 11, 0.88);
+  border-bottom: 1px solid rgba(39, 39, 42, 0.8);
+  backdrop-filter: blur(16px);
 }
 
 .navbar h2 {
-  color: #c2410c;
-  letter-spacing: 1px;
+  color: #f4f4f5;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -1.5px;
 }
 
-.navbar nav {
-  display: flex;
-  gap: 28px;
+/* Nav buttons */
+.nav-links button {
+  background: transparent;
+  color: #a1a1aa;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 14px;
+  box-shadow: none;
 }
 
-.navbar a {
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
+.nav-links button:hover {
+  background: rgba(39, 39, 42, 0.75);
+  color: #f4f4f5;
+  transform: none;
+  box-shadow: none;
 }
 
+.nav-links .active-nav {
+  background: #10b981;
+  color: #09090b;
+  font-weight: 800;
+}
+
+.nav-links .active-nav:hover {
+  background: #34d399;
+  color: #09090b;
+}
+
+/* MAIN */
 main {
-  max-width: 1150px;
+  max-width: 1180px;
   margin: 0 auto;
   padding: 64px 24px;
 }
 
+/* HERO SECTION */
 .hero {
   display: grid;
-  grid-template-columns: 1.3fr 0.7fr;
-  gap: 48px;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 52px;
   align-items: center;
+  min-height: 520px;
 }
 
 .tagline {
-  color: #c2410c;
-  font-weight: bold;
+  color: #10b981;
+  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.6px;
+  font-size: 12px;
 }
 
 .hero h1 {
-  font-size: 56px;
-  line-height: 1.05;
-  margin: 16px 0;
+  color: #f4f4f5;
+  font-size: 60px;
+  line-height: 1.02;
+  margin: 18px 0;
+  letter-spacing: -2.4px;
+  max-width: 720px;
 }
 
 .description {
+  color: #a1a1aa;
   font-size: 18px;
-  color: #555;
-  max-width: 620px;
-  line-height: 1.6;
+  line-height: 1.75;
+  max-width: 640px;
 }
 
+/* HERO BUTTONS */
 .hero-buttons {
-  margin-top: 28px;
+  margin-top: 32px;
   display: flex;
-  gap: 16px;
+  gap: 14px;
+  align-items: center;
 }
 
 button {
-  padding: 14px 24px;
+  background: #10b981;
+  color: #09090b;
   border: none;
-  border-radius: 10px;
-  background: #c2410c;
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
+  border-radius: 14px;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 800;
   cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background: #34d399;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.22);
 }
 
 .secondary-button {
-  background: white;
-  color: #c2410c;
-  border: 1px solid #c2410c;
+  background: rgba(24, 24, 27, 0.75);
+  color: #e4e4e7;
+  border: 1px solid rgba(63, 63, 70, 0.9);
 }
 
+.secondary-button:hover {
+  background: rgba(39, 39, 42, 0.95);
+  color: #f4f4f5;
+  box-shadow: none;
+}
+
+/* TODAY'S WORKOUT CARD */
 .hero-card {
-  background: white;
-  padding: 28px;
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  background: rgba(24, 24, 27, 0.78);
+  border: 1px solid rgba(63, 63, 70, 0.65);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .hero-card h3 {
+  color: #f4f4f5;
   margin-top: 0;
   margin-bottom: 20px;
+  font-size: 22px;
+  letter-spacing: -0.4px;
 }
 
 .workout-item {
   display: flex;
   justify-content: space-between;
-  padding: 16px 0;
-  border-bottom: 1px solid #eee;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(63, 63, 70, 0.55);
 }
 
 .workout-item:last-child {
@@ -119,20 +172,27 @@ button {
 }
 
 .workout-item span {
-  color: #555;
+  color: #a1a1aa;
+  font-size: 15px;
 }
 
 .workout-item strong {
-  color: #c2410c;
+  color: #10b981;
+  font-size: 16px;
+  font-weight: 900;
 }
 
+/* FEATURES SECTION */
 .features {
-  margin-top: 88px;
+  margin-top: 80px;
 }
 
 .features h2 {
+  color: #f4f4f5;
   font-size: 32px;
-  margin-bottom: 24px;
+  margin-bottom: 26px;
+  letter-spacing: -0.8px;
+  text-align: center;
 }
 
 .feature-grid {
@@ -142,36 +202,61 @@ button {
 }
 
 .feature-card {
-  background: white;
-  padding: 28px;
-  border-radius: 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  background: rgba(24, 24, 27, 0.72);
+  border: 1px solid rgba(63, 63, 70, 0.62);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  transition: 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
 }
 
 .feature-card h3 {
+  color: #f4f4f5;
   margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 20px;
+  letter-spacing: -0.3px;
 }
 
 .feature-card p {
-  color: #555;
-  line-height: 1.5;
+  color: #a1a1aa;
+  line-height: 1.7;
+  margin-bottom: 0;
 }
 
-@media (max-width: 800px) {
-  .navbar {
-    padding: 0 24px;
-  }
+/* Logged in text */
+.hero p,
+main p {
+  color: #a1a1aa;
+}
 
-  .navbar nav {
-    display: none;
+/* Logout button if inside hero */
+.hero button:not(.secondary-button) {
+  background: #10b981;
+  color: #09090b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .navbar {
+    padding: 0 28px;
   }
 
   .hero {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
 
   .hero h1 {
-    font-size: 40px;
+    font-size: 46px;
   }
 
   .feature-grid {
@@ -179,213 +264,195 @@ button {
   }
 }
 
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(17, 24, 39, 0.55);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-}
-
-.modal {
-  position: relative;
-  width: 100%;
-  max-width: 420px;
-  background: white;
-  padding: 32px;
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
-}
-
-.modal h2 {
-  margin: 0 0 8px;
-}
-
-.modal p {
-  margin: 0 0 24px;
-  color: #555;
-  line-height: 1.5;
-}
-
-.modal label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.modal input {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 18px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 16px;
-
-}
-
-.modal-button {
-  width: 100%;
-  margin-top: 6px;
-}
-
-.close-button {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: transparent;
-  color: #555;
-  padding: 4px 8px;
-  font-size: 24px;
-  border: none;
-  cursor: pointer;
-}
-
-.workout-form {
-  display: grid;
-  gap: 12px;
-}
-
-.workout-form input {
-  padding: 12px 14px;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  font-size: 15px;
-}
-
-.workout-list {
-  display: grid;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.workout-card {
-  background: white;
-  border: 1px solid #eee;
-  padding: 16px;
-  border-radius: 16px;
-}
-
-.workout-card h3 {
-  margin: 0 0 6px;
-}
-
-.workout-card p {
-  margin: 4px 0;
-  color: #555;
-}
-
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 32px;
-}
-
-.nav-links {
-  display: flex;
-  gap: 16px;
-}
-
-.nav-links button {
-  background: transparent;
-  color: #333;
-  border: none;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.nav-links button:hover {
-  color: #d1410c;
-}
-
-.nav-links .active-nav {
-  color: #d1410c;
-  font-weight: 700;
-}
-
-.progress-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.progress-heading {
-  margin: 0;
-}
-
-.progress-empty {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
-}
-
-.progress-list {
-  display: grid;
-  gap: 12px;
-}
-
-.progress-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  background: #f8f8f8;
-}
-
-.progress-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.progress-exercise-name {
-  display: block;
-  font-size: 15px;
-}
-
-.progress-meta {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #555;
-}
-
-.progress-chart-area {
-  width: 140px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.progress-sparkline {
-  flex-shrink: 0;
-}
-
-.progress-sparkline-line {
-  stroke: #2b6cb0;
-  stroke-width: 2;
-}
-
-.progress-last-weight {
-  min-width: 48px;
-  text-align: right;
-  font-weight: 600;
-}
-
 @media (max-width: 520px) {
-  .progress-row {
-    align-items: flex-start;
-    flex-direction: column;
+  main {
+    padding: 36px 18px;
   }
 
-  .progress-chart-area {
+  .navbar {
+    height: auto;
+    padding: 18px 20px;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .navbar h2 {
+    font-size: 28px;
+  }
+
+  .nav-links {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-links button {
+    padding: 9px 14px;
+    font-size: 14px;
+  }
+
+  .hero h1 {
+    font-size: 38px;
+  }
+
+  .description {
+    font-size: 16px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-buttons button {
+    width: 100%;
+  }
+}
+
+/* =========================
+   LOG WORKOUT PAGE - SAFE STYLING
+========================= */
+
+.workout-form {
+  max-width: 680px;
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+  background: rgba(24, 24, 27, 0.72);
+  border: 1px solid rgba(63, 63, 70, 0.7);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.workout-form h2 {
+  color: #d4d4d8;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 18px 0 6px;
+}
+
+.workout-form input,
+.workout-form textarea {
+  width: 100%;
+  background: rgba(9, 9, 11, 0.55);
+  border: 1px solid #3f3f46;
+  color: #e4e4e7;
+  border-radius: 12px;
+  padding: 13px 15px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.workout-form input::placeholder,
+.workout-form textarea::placeholder {
+  color: #71717a;
+}
+
+.workout-form input:focus,
+.workout-form textarea:focus {
+  border-color: rgba(16, 185, 129, 0.75);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+.workout-form textarea {
+  min-height: 90px;
+  resize: none;
+}
+
+.workout-form .form-row,
+.workout-form .input-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.workout-form label {
+  color: #71717a;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.workout-form button[type="submit"],
+.workout-form .save-workout-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 16px 20px;
+  background: #10b981;
+  color: #09090b;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.workout-form button[type="submit"]:hover,
+.workout-form .save-workout-button:hover {
+  background: #34d399;
+  transform: translateY(-1px);
+}
+
+.workout-form .add-exercise-button {
+  background: rgba(24, 24, 27, 0.75);
+  color: #d4d4d8;
+  border: 1px dashed #3f3f46;
+  border-radius: 14px;
+  padding: 14px 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.workout-form .add-exercise-button:hover {
+  background: rgba(16, 185, 129, 0.08);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.55);
+}
+
+/* Workout log below form */
+.workout-list {
+  max-width: 680px;
+  margin: 32px auto 0;
+  display: grid;
+  gap: 16px;
+}
+
+.workout-list .workout-card {
+  background: rgba(24, 24, 27, 0.72);
+  border: 1px solid rgba(63, 63, 70, 0.65);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.workout-list .workout-card h3 {
+  color: #f4f4f5;
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.workout-list .workout-card p {
+  color: #a1a1aa;
+  margin: 4px 0;
+}
+
+@media (max-width: 700px) {
+  .workout-form {
+    padding: 22px;
+  }
+
+  .workout-form .form-row,
+  .workout-form .input-row {
+    grid-template-columns: 1fr;
   }
 }
