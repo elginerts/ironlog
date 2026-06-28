@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { supabase } from "./utils/supabase";
 
@@ -17,6 +17,48 @@ function App() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [currentPage, setCurrentPage] = useState<string>("home");
+
+async function fetchWorkouts() {
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError) {
+    alert(userError.message);
+    return;
+  }
+
+  if (!user) {
+    setWorkouts([]);
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("workouts")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("workout_date", { ascending: false });
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  const formattedWorkouts: Workout[] = data.map((workout) => ({
+    exerciseName: workout.exercise_name,
+    sets: workout.sets,
+    reps: workout.reps,
+    weight: workout.weight,
+    date: workout.workout_date,
+  }));
+
+  setWorkouts(formattedWorkouts);
+}
+
+useEffect(() => {
+  fetchWorkouts();
+}, [userEmail]);
 
 async function addWorkout(workout: Workout): Promise<boolean> {
   const {
@@ -51,7 +93,7 @@ async function addWorkout(workout: Workout): Promise<boolean> {
     return false;
   }
 
-  setWorkouts((currentWorkouts) => [workout, ...currentWorkouts]);
+  await fetchWorkouts();
 
   alert("Workout saved!");
   return true;
@@ -118,7 +160,7 @@ function renderPage() {
     }
 
     if (currentPage === "progress") {
-      return <ProgressPage />;
+      return <ProgressPage workouts={workouts} />;
     }
 
     if (currentPage === "feed") {
