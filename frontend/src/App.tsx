@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { supabase } from "./utils/supabase";
 
@@ -18,106 +18,101 @@ function App() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [currentPage, setCurrentPage] = useState<string>("home");
 
-async function fetchWorkouts() {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  async function fetchWorkouts() {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  if (userError) {
-    alert(userError.message);
-    return;
+    if (userError) {
+      alert(userError.message);
+      return;
+    }
+
+    if (!user) {
+      setWorkouts([]);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("workouts")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("workout_date", { ascending: false });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const formattedWorkouts: Workout[] = data.map((workout) => ({
+      exerciseName: workout.exercise_name,
+      sets: workout.sets,
+      reps: workout.reps,
+      weight: workout.weight,
+      date: workout.workout_date,
+    }));
+
+    setWorkouts(formattedWorkouts);
   }
 
-  if (!user) {
-    setWorkouts([]);
-    return;
-  }
+  useEffect(() => {
+    fetchWorkouts();
+  }, [userEmail]);
 
-  const { data, error } = await supabase
-    .from("workouts")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("workout_date", { ascending: false });
+  async function addWorkout(workout: Workout): Promise<boolean> {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+    if (userError) {
+      alert(userError.message);
+      return false;
+    }
 
-  const formattedWorkouts: Workout[] = data.map((workout) => ({
-    exerciseName: workout.exercise_name,
-    sets: workout.sets,
-    reps: workout.reps,
-    weight: workout.weight,
-    date: workout.workout_date,
-  }));
+    if (!user) {
+      alert("You must be logged in to save a workout.");
+      return false;
+    }
 
-  setWorkouts(formattedWorkouts);
-}
-
-useEffect(() => {
-  fetchWorkouts();
-}, [userEmail]);
-
-async function addWorkout(workout: Workout): Promise<boolean> {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError) {
-    alert(userError.message);
-    return false;
-  }
-
-  if (!user) {
-    alert("You must be logged in to save a workout.");
-    return false;
-  }
-
-  const { data, error } = await supabase
-    .from("workouts")
-    .insert({
+    const { error } = await supabase.from("workouts").insert({
       user_id: user.id,
       exercise_name: workout.exerciseName,
       sets: workout.sets,
       reps: workout.reps,
       weight: workout.weight,
       workout_date: workout.date,
-    })
-    .select();
+    });
 
-  if (error) {
-    alert(error.message);
-    return false;
+    if (error) {
+      alert(error.message);
+      return false;
+    }
+
+    await fetchWorkouts();
+
+    alert("Workout saved!");
+    return true;
   }
 
-  await fetchWorkouts();
+  async function shareWorkout(workout: Workout): Promise<boolean> {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-  alert("Workout saved!");
-  return true;
-  }
+    if (userError) {
+      alert(userError.message);
+      return false;
+    }
 
-async function shareWorkout(workout: Workout): Promise<boolean> {
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+    if (!user) {
+      alert("You must be logged in to share a workout.");
+      return false;
+    }
 
-  if (userError) {
-    alert(userError.message);
-    return false;
-  }
-
-  if (!user) {
-    alert("You must be logged in to share a workout.");
-    return false;
-  }
-
-  const { error } = await supabase
-    .from("workout_posts")
-    .insert({
+    const { error } = await supabase.from("workout_posts").insert({
       user_id: user.id,
       exercise_name: workout.exerciseName,
       sets: workout.sets,
@@ -128,27 +123,29 @@ async function shareWorkout(workout: Workout): Promise<boolean> {
       visibility: "public",
     });
 
-  if (error) {
-    alert(error.message);
-    return false;
+    if (error) {
+      alert(error.message);
+      return false;
+    }
+
+    alert("Workout shared to feed!");
+    return true;
   }
 
-  alert("Workout shared to feed!");
-  return true;
-}
+  async function handleLogout() {
+    const { error } = await supabase.auth.signOut();
 
-async function handleLogout() {
-  const { error } = await supabase.auth.signOut();
+    if (error) {
+      alert(error.message);
+      return;
+    }
 
-  if (error) {
-    return;
+    setUserEmail(null);
+    setWorkouts([]);
+    setCurrentPage("home");
   }
 
-  setUserEmail(null);
-
-}
-
-function renderPage() {
+  function renderPage() {
     if (currentPage === "workouts") {
       return (
         <WorkoutsPage
@@ -160,7 +157,7 @@ function renderPage() {
     }
 
     if (currentPage === "progress") {
-      return <ProgressPage workouts={workouts} />;
+      return <ProgressPage workouts={workouts} userEmail={userEmail} />;
     }
 
     if (currentPage === "feed") {
@@ -176,22 +173,15 @@ function renderPage() {
         onLogoutClick={handleLogout}
       />
     );
-}
+  }
 
-return (
+  return (
     <div className="app">
-      <Navbar
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-      />
+      <Navbar currentPage={currentPage} onPageChange={setCurrentPage} />
 
-      <main>
-        {renderPage()}
-      </main>
+      <main>{renderPage()}</main>
 
-      {showSignUp && (
-        <SignUpModal onClose={() => setShowSignUp(false)} />
-      )}
+      {showSignUp && <SignUpModal onClose={() => setShowSignUp(false)} />}
 
       {showLogin && (
         <LoginModal

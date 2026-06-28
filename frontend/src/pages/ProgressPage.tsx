@@ -3,10 +3,20 @@ import type { Workout } from "../components/types";
 
 type ProgressPageProps = {
   workouts: Workout[];
+  userEmail: string | null;
 };
 
-function ProgressPage({ workouts }: ProgressPageProps) {
+function ProgressPage({ workouts, userEmail }: ProgressPageProps) {
   const [selectedExercise, setSelectedExercise] = useState("All");
+
+  if (!userEmail) {
+    return (
+      <div className="progress-page">
+        <h1>Exercise History and Progress</h1>
+        <p>Please log in to view your exercise history and progress.</p>
+      </div>
+    );
+  }
 
   const exerciseOptions = [
     "All",
@@ -16,9 +26,7 @@ function ProgressPage({ workouts }: ProgressPageProps) {
   const filteredWorkouts =
     selectedExercise === "All"
       ? workouts
-      : workouts.filter(
-          (workout) => workout.exerciseName === selectedExercise
-        );
+      : workouts.filter((workout) => workout.exerciseName === selectedExercise);
 
   return (
     <div className="progress-page">
@@ -30,7 +38,7 @@ function ProgressPage({ workouts }: ProgressPageProps) {
         <select
           id="exercise-filter"
           value={selectedExercise}
-          onChange={(e) => setSelectedExercise(e.target.value)}
+          onChange={(event) => setSelectedExercise(event.target.value)}
         >
           {exerciseOptions.map((exercise) => (
             <option key={exercise} value={exercise}>
