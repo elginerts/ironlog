@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
+import { isValidWorkoutInput } from "../utils/workoutUtils";
 import type { Workout } from "./types";
 
 type WorkoutFormProps = {
@@ -45,19 +46,18 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
 
   console.log("Workout form submitted");
   console.log("Form values:", {
-
     exerciseName,
-
     sets,
-
     reps,
-
     weight,
-
   });
 
-  if (!exerciseName || !sets || !reps || !weight) {
-    alert("Please fill in all fields");
+  const setsNumber = Number(sets);
+  const repsNumber = Number(reps);
+  const weightNumber = Number(weight);
+
+  if (!isValidWorkoutInput(exerciseName, setsNumber, repsNumber, weightNumber)) {
+    alert("Please enter a valid workout.");
     return;
   }
 
@@ -66,9 +66,9 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
   try {
     const wasSaved = await onAddWorkout({
       exerciseName,
-      sets: Number(sets),
-      reps: Number(reps),
-      weight: Number(weight),
+      sets: setsNumber,
+      reps: repsNumber,
+      weight: weightNumber,
       date: new Date().toISOString().split("T")[0],
     });
 
