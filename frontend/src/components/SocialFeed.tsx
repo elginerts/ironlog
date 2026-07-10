@@ -14,7 +14,6 @@ type WorkoutPost = {
   created_at: string;
   profiles: {
     username: string; 
-    avatar_url: string | null 
   } | null;   
 };
 
@@ -27,7 +26,7 @@ function SocialFeed() {
 
     const { data, error } = await supabase
       .from("workout_posts")
-      .select(`*, profiles ( username, avatar_url )`)
+      .select(`*, profiles ( username )`)
       .eq("visibility", "public")
       .order("created_at", { ascending: false });
 
@@ -69,25 +68,18 @@ function SocialFeed() {
             <div className="feed-post" key={post.id}>
               <div className="feed-post-top">
                 <div className="feed-user-info">
-                  {post.profiles?.avatar_url ? (
-                    <img
-                      src={post.profiles.avatar_url}
-                      alt="Profile"
-                      className="feed-avatar"
-                    />
-                  ) : (
-                    <div className="feed-avatar-placeholder">
-                      {(post.profiles?.username || "U").charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  
+                  <div className="feed-avatar-placeholder">
+                    {(post.profiles?.username || "U").charAt(0).toUpperCase()}
+                  </div>
+
                   <p className="feed-user">
                     User: {post.profiles?.username || "Unknown User"}
                   </p>
                 </div>
+
                 <p className="feed-date">{post.workout_date}</p>
               </div>
-
+              
               {post.caption && <p className="feed-caption">{post.caption}</p>}
 
               <h3 className="feed-exercise">{post.exercise_name}</h3>
