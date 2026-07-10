@@ -11,6 +11,7 @@ function SignUpModal({ onClose }: SignUpModalProps) {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [username, setUsername] = useState("");
 
   async function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
 
@@ -20,20 +21,38 @@ function SignUpModal({ onClose }: SignUpModalProps) {
     setErrorMessage("");
     setSuccessMessage("");
 
+    // creates supabase auth account
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
-    setLoading(false);
-
     if (error) {
       setErrorMessage(error.message);
+      setLoading(false);
       return;
     }
 
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert(
+          {
+            id: data.user.id,
+            username: username.trim(),
+          },
+        );
+
+      if (profileError) {
+        setErrorMessage(profileError.message);
+        setLoading(false);
+        return;
+    }
+  }
+
     console.log("Signup data:", data);
     setSuccessMessage("Account created! You may proceed to Login.");
+    setLoading(false);
   } 
 
 
@@ -49,6 +68,15 @@ function SignUpModal({ onClose }: SignUpModalProps) {
         <p>Sign up to start tracking your workouts with IRONLOG.</p>
 
         <form onSubmit={handleSignUp}>
+          <label>Username</label>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange = {(event) => setUsername(event.target.value)}
+            required
+          />
+
           <label>Email</label>
           <input
             type="email"
