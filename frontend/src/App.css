@@ -428,3 +428,27 @@ button:hover {
     gap: 4px;
   }
 }
+
+.feed-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.feed-avatar,
+.feed-avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.feed-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5e7eb;
+  color: #374151;
+  font-weight: 700;
+}
