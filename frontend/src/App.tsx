@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { supabase } from "./utils/supabase";
 
@@ -11,18 +11,29 @@ import WorkoutsPage from "./pages/WorkoutsPage";
 import ProgressPage from "./pages/ProgressPage";
 import FeedPage from "./pages/FeedPage";
 
+type FetchWorkoutsOptions = {
+  shouldUpdate?: () => boolean;
+};
+
 function App() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [currentPage, setCurrentPage] = useState<string>("home");
+  const isMountedRef = useRef(false);
 
-  async function fetchWorkouts() {
+  async function fetchWorkouts({
+    shouldUpdate = () => isMountedRef.current,
+  }: FetchWorkoutsOptions = {}) {
     const {
       data: { user },
       error: userError,
     } = await supabase.auth.getUser();
+
+    if (!shouldUpdate()) {
+      return;
+    }
 
     if (userError) {
       alert(userError.message);
@@ -39,6 +50,10 @@ function App() {
       .select("*")
       .eq("user_id", user.id)
       .order("workout_date", { ascending: false });
+
+    if (!shouldUpdate()) {
+      return;
+    }
 
     if (error) {
       alert(error.message);
@@ -57,7 +72,29 @@ function App() {
   }
 
   useEffect(() => {
-    fetchWorkouts();
+    isMountedRef.current = true;
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isCurrentRequest = true;
+
+    void Promise.resolve().then(() => {
+      if (!isCurrentRequest) {
+        return;
+      }
+
+      void fetchWorkouts({
+        shouldUpdate: () => isCurrentRequest && isMountedRef.current,
+      });
+    });
+
+    return () => {
+      isCurrentRequest = false;
+    };
   }, [userEmail]);
 
   async function addWorkout(workout: Workout): Promise<boolean> {

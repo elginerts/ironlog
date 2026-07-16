@@ -7,6 +7,10 @@ type WorkoutFormProps = {
   onAddWorkout: (workout: Workout) => Promise<boolean>;
 };
 
+type ExerciseSuggestionRow = {
+  name: string | null;
+};
+
 function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
   const [exerciseName, setExerciseName] = useState("");
   const [sets, setSets] = useState("");
@@ -16,6 +20,8 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function loadSuggestions() {
       try {
         const { data, error } = await supabase
@@ -24,21 +30,34 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
           .order("created_at", { ascending: false })
           .limit(50);
 
+        if (!isMounted) {
+          return;
+        }
+
         if (error) {
           console.error("Error loading exercise suggestions:", error);
           return;
         }
 
         if (data) {
-          const names = data.map((row: any) => row.name).filter(Boolean);
+          const rows = data as ExerciseSuggestionRow[];
+          const names = rows
+            .map((row) => row.name)
+            .filter((name): name is string => Boolean(name));
           setSuggestions(Array.from(new Set(names)));
         }
       } catch (err) {
-        console.error(err);
+        if (isMounted) {
+          console.error(err);
+        }
       }
     }
 
     loadSuggestions();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   async function handleSubmit(event: React.FormEvent) {
