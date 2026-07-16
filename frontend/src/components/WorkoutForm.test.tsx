@@ -1,11 +1,11 @@
 import { render, screen} from "@testing-library/react";
 import WorkoutForm from "./WorkoutForm";
-import { describe, it , expect } from "vitest";
+import { describe, it , expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
 
 describe("WorkoutForm", () => {
     it("renders the workout form's input fields", () => {
-        render(<WorkoutForm onAddWorkout={() => {}} />);
+        render(<WorkoutForm onAddWorkout={async () => false} />);
 
         expect(screen.getByText(/Save Workout/i)).toBeInTheDocument();
         expect(screen.getByPlaceholderText("Exercise name")).toBeInTheDocument();
@@ -18,7 +18,7 @@ describe("WorkoutForm", () => {
 
     it("allows the user to type in workout details into field", async() => {
         const user = userEvent.setup();
-        render(<WorkoutForm onAddWorkout={() => {}} />);
+        render(<WorkoutForm onAddWorkout={async () => false} />);
 
         const exerciseInput = screen.getByPlaceholderText("Exercise name");
         const setsInput = screen.getByPlaceholderText("Sets");
@@ -39,7 +39,7 @@ describe("WorkoutForm", () => {
 
     it("calls onAddWorkout when the form is submitted", async() => {
         const user = userEvent.setup();
-        const mockAddWorkout = vi.fn();
+        const mockAddWorkout = vi.fn(async () => false);
 
         render(<WorkoutForm onAddWorkout={mockAddWorkout} />);
 

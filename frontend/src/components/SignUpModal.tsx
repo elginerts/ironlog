@@ -25,6 +25,11 @@ function SignUpModal({ onClose }: SignUpModalProps) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          username: username.trim(),
+        },
+      },
     });
 
     if (error) {
@@ -32,23 +37,6 @@ function SignUpModal({ onClose }: SignUpModalProps) {
       setLoading(false);
       return;
     }
-
-    if (data.user) {
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert(
-          {
-            id: data.user.id,
-            username: username.trim(),
-          },
-        );
-
-      if (profileError) {
-        setErrorMessage(profileError.message);
-        setLoading(false);
-        return;
-    }
-  }
 
     console.log("Signup data:", data);
     setSuccessMessage("Account created! You may proceed to Login.");

@@ -17,11 +17,21 @@ type WorkoutPost = {
   } | null;   
 };
 
+type FetchPostsOptions = {
+  shouldUpdate?: () => boolean;
+};
+
 function SocialFeed() {
   const [posts, setPosts] = useState<WorkoutPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  async function fetchPosts() {
+  async function fetchPosts({
+    shouldUpdate = () => true,
+  }: FetchPostsOptions = {}) {
+    if (!shouldUpdate()) {
+      return;
+    }
+
     setLoading(true);
 
     const { data, error } = await supabase
@@ -29,6 +39,10 @@ function SocialFeed() {
       .select(`*, profiles ( username )`)
       .eq("visibility", "public")
       .order("created_at", { ascending: false });
+
+    if (!shouldUpdate()) {
+      return;
+    }
 
     if (error) {
       alert(error.message);
@@ -41,7 +55,19 @@ function SocialFeed() {
   }
 
   useEffect(() => {
-    fetchPosts();
+    let isMounted = true;
+
+    void Promise.resolve().then(() => {
+      if (!isMounted) {
+        return;
+      }
+
+      void fetchPosts({ shouldUpdate: () => isMounted });
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (loading) {
