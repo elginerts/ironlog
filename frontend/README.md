@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# IronLog
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+IronLog is a workout-tracking web application designed to help users log workouts, monitor their progress and view workout activity shared by other users.
 
-Currently, two official plugins are available:
+The application is built using React, TypeScript, Vite and Supabase.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+### Workout Logging
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Users can record workout details such as:
 
-## Expanding the ESLint configuration
+- Exercise name
+- Number of sets
+- Number of repetitions
+- Weight used
+- Workout date
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Workout History
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Signed-in users can view their previous workout records retrieved from Supabase.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Progress Tracking
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Users can review their workout progress over time.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Current improvements planned for this feature include:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Exercise-specific progress charts
+- Personal-record tracking
+- Workout-volume calculations
+- Performance comparisons over time
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### Social Feed
+
+Users can view workout activities shared through the social feed.
+
+The feed will be improved to display usernames instead of raw user IDs.
+
+## Technology Stack
+
+- React
+- TypeScript
+- Vite
+- Supabase
+- Vitest
+- React Testing Library
+
+## Project Structure
+
+```text
+src/
+├── components/
+│   ├── WorkoutForm.tsx
+│   ├── WorkoutLog.tsx
+│   └── ...
+├── utils/
+│   ├── workoutUtils.ts
+│   └── workoutUtils.test.ts
+├── test/
+│   └── setup.ts
+└── App.tsx
