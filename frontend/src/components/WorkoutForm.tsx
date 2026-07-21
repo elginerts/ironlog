@@ -18,6 +18,8 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
   const [weight, setWeight] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
+  const [date, setDate] = useState(today);
 
   useEffect(() => {
     let isMounted = true;
@@ -88,7 +90,7 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
       sets: setsNumber,
       reps: repsNumber,
       weight: weightNumber,
-      date: new Date().toISOString().split("T")[0],
+      date, 
     });
 
     if (!wasSaved) {
@@ -112,6 +114,7 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
     setSets("");
     setReps("");
     setWeight("");
+    setDate(today);
   } catch (err) {
     console.error("Failed to save workout:", err);
   } finally {
@@ -161,15 +164,25 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
         />
 
         <input
-          type="number"
-          placeholder="Weight (kg)"
-          value={weight}
-          onChange={(e) => setWeight(e.target.value)}
+         type="number"
+         placeholder="Weight (kg)"
+         value={weight}
+         onChange={(e) => setWeight(e.target.value)}
         />
 
-        <button type="submit" disabled={isSaving}>
-          {isSaving ? "Saving..." : "Save Workout"}
-        </button>
+        <label htmlFor="workout-date">Workout date</label>
+        <input
+         id="workout-date"
+         type="date"
+         value={date}
+         max={today}
+         onChange={(event) => setDate(event.target.value)}
+         required
+/>
+
+<button type="submit" disabled={isSaving}>
+  {isSaving ? "Saving..." : "Save Workout"}
+</button>
       </form>
     </section>
   );
