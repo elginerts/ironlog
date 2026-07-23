@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../utils/supabase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { firebaseAuth } from "../utils/firebase";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -20,22 +21,24 @@ function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
     setErrorMessage("");
     setSuccessMessage("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        firebaseAuth,
+        email,
+        password
+      );
 
-    setLoading(false);
+      setSuccessMessage("Login successful!");
 
-    if (error) {
-      setErrorMessage(error.message);
-      return;
-    }
-
-    setSuccessMessage("Login successful!");
-
-    if (data.user.email) {
-      onLoginSuccess(data.user.email);
+      if (userCredential.user.email) {
+        onLoginSuccess(userCredential.user.email);
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to log in.";
+      setErrorMessage(message);
+    } finally {
+      setLoading(false);
     }
   }
 

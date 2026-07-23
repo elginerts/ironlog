@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { supabase } from "./utils/supabase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { firebaseAuth } from "./utils/firebase";
 import {
   calculateEstimated1RM,
   detectPersonalRecord,
@@ -28,6 +30,14 @@ function App() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [currentPage, setCurrentPage] = useState<string>("home");
   const isMountedRef = useRef(false);
+
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+    setUserEmail(user?.email ?? null);
+  });
+
+  return unsubscribe;
+}, []);
 
   async function fetchWorkouts({
     shouldUpdate = () => isMountedRef.current,
@@ -267,16 +277,18 @@ function App() {
   }
 
   async function handleLogout() {
-    const { error } = await supabase.auth.signOut();
+    try {
+      await signOut(firebaseAuth);
 
-    if (error) {
-      alert(error.message);
-      return;
+      setUserEmail(null);
+      setWorkouts([]);
+      setCurrentPage("home");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to log out.";
+
+      alert(message);
     }
-
-    setUserEmail(null);
-    setWorkouts([]);
-    setCurrentPage("home");
   }
 
   function renderPage() {
