@@ -23,19 +23,24 @@ export async function fetchWorkoutsFromApi() {
   const headers = await getAuthorizationHeader();
 
   const response = await fetch(`${apiUrl}/api/workouts`, {
+    method: "GET",
     headers,
   });
 
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message ?? "Unable to retrieve workouts.");
+    throw new Error(
+      result.message ?? "Unable to retrieve workouts.",
+    );
   }
 
   return result.workouts;
 }
 
-export async function createWorkoutThroughApi(workout: Workout) {
+export async function createWorkoutThroughApi(
+  workout: Workout,
+) {
   const headers = await getAuthorizationHeader();
 
   const response = await fetch(`${apiUrl}/api/workouts`, {
@@ -53,7 +58,9 @@ export async function createWorkoutThroughApi(workout: Workout) {
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message ?? "Unable to save workout.");
+    throw new Error(
+      result.message ?? "Unable to save workout.",
+    );
   }
 
   return result.workout;

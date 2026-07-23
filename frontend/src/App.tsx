@@ -9,6 +9,10 @@ import {
   isAnyPersonalRecord,
 } from "./utils/personalRecord";
 import LeaderboardPage from "./pages/LeaderboardPage";
+import {
+  createWorkoutThroughApi,
+  fetchWorkoutsFromApi,
+} from "./services/workoutApi";
 
 import Navbar from "./components/Navbar";
 import SignUpModal from "./components/SignUpModal";
@@ -32,47 +36,40 @@ function App() {
   const isMountedRef = useRef(false);
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-    setUserEmail(user?.email ?? null);
-  });
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+      setUserEmail(user?.email ?? null);
+    });
 
-  return unsubscribe;
-}, []);
+    return unsubscribe;
+  }, []);
 
   async function fetchWorkouts({
     shouldUpdate = () => isMountedRef.current,
   }: FetchWorkoutsOptions = {}) {
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
     if (!shouldUpdate()) {
       return;
     }
 
-    if (userError) {
-      alert(userError.message);
-      return;
-    }
-
-    if (!user) {
+    if (!firebaseAuth.currentUser) {
       setWorkouts([]);
       return;
     }
 
-    const { data, error } = await supabase
-      .from("workouts")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("workout_date", { ascending: false });
+    let data;
 
-    if (!shouldUpdate()) {
+    try {
+      data = await fetchWorkoutsFromApi();
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to retrieve workouts.";
+
+      alert(message);
       return;
     }
 
-    if (error) {
-      alert(error.message);
+    if (!shouldUpdate()) {
       return;
     }
 
@@ -180,34 +177,22 @@ function App() {
   }, [userEmail]);
 
   async function addWorkout(workout: Workout): Promise<boolean> {
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError) {
-      alert(userError.message);
-      return false;
-    }
-
-    if (!user) {
+    if (!firebaseAuth.currentUser) {
       alert("You must be logged in to save a workout.");
       return false;
     }
 
     const personalRecord = detectPersonalRecord(workout, workouts);
 
-    const { error } = await supabase.from("workouts").insert({
-      user_id: user.id,
-      exercise_name: workout.exerciseName,
-      sets: workout.sets,
-      reps: workout.reps,
-      weight: workout.weight,
-      workout_date: workout.date,
-    });
+    try {
+      await createWorkoutThroughApi(workout);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to save workout.";
 
-    if (error) {
-      alert(error.message);
+      alert(message);
       return false;
     }
 
