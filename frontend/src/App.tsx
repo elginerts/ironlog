@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { supabase } from "./utils/supabase";
-import { detectPersonalRecord, isAnyPersonalRecord, calculateEstimated1RM} from "./utils/PersonalRecord";
+import {
+  calculateEstimated1RM,
+  detectPersonalRecord,
+  isAnyPersonalRecord,
+} from "./utils/personalRecord";
 import LeaderboardPage from "./pages/LeaderboardPage";
 
 import Navbar from "./components/Navbar";
@@ -76,12 +80,13 @@ function App() {
         weight: workout.weight,
         date: workout.workout_date,
       }));
-      const workoutsWithCurrentRecords = chronologicalWorkouts.map((workout) => {
-        const sameExerciseWorkouts = chronologicalWorkouts.filter(
-          (item) =>
-            item.exerciseName.trim().toLowerCase() ===
-            workout.exerciseName.trim().toLowerCase(),
-        );
+
+    const workoutsWithCurrentRecords = chronologicalWorkouts.map((workout) => {
+      const sameExerciseWorkouts = chronologicalWorkouts.filter(
+        (item) =>
+          item.exerciseName.trim().toLowerCase() ===
+          workout.exerciseName.trim().toLowerCase(),
+      );
 
       const latestHighestWeightWorkout = [...sameExerciseWorkouts]
         .filter(
@@ -91,17 +96,15 @@ function App() {
               ...sameExerciseWorkouts.map((entry) => Number(entry.weight)),
             ),
         )
-      .at(-1);
+        .at(-1);
 
       const latestHighestRepsWorkout = [...sameExerciseWorkouts]
         .filter(
           (item) =>
             Number(item.reps) ===
-            Math.max(
-              ...sameExerciseWorkouts.map((entry) => Number(entry.reps)),
-          ),
-      )
-      .at(-1);
+            Math.max(...sameExerciseWorkouts.map((entry) => Number(entry.reps))),
+        )
+        .at(-1);
 
       const highestEstimated1RM = Math.max(
         ...sameExerciseWorkouts.map((item) =>
@@ -135,7 +138,7 @@ function App() {
       };
     });
 
-const formattedWorkouts = workoutsWithCurrentRecords.reverse();
+    const formattedWorkouts = workoutsWithCurrentRecords.reverse();
 
     setWorkouts(formattedWorkouts);
   }
@@ -202,27 +205,28 @@ const formattedWorkouts = workoutsWithCurrentRecords.reverse();
 
     if (isAnyPersonalRecord(personalRecord)) {
       const achievements: string[] = [];
-  
-    if (personalRecord.weightPR) {
-      achievements.push("Weight PR");
-    }
-    
-    if (personalRecord.repsPR) {
-      achievements.push("Repetition PR");
-    }
 
-    if (personalRecord.estimated1RMPR) {
-      achievements.push(
-        `Estimated 1RM PR: ${personalRecord.estimated1RM} kg`,
+      if (personalRecord.weightPR) {
+        achievements.push("Weight PR");
+      }
+
+      if (personalRecord.repsPR) {
+        achievements.push("Repetition PR");
+      }
+
+      if (personalRecord.estimated1RMPR) {
+        achievements.push(
+          `Estimated 1RM PR: ${personalRecord.estimated1RM} kg`,
+        );
+      }
+
+      alert(
+        `Workout saved!\n\n🏆 New Personal Record!\n${achievements.join("\n")}`,
       );
+    } else {
+      alert("Workout saved!");
     }
 
-    alert(
-      `Workout saved!\n\n🏆 New Personal Record!\n${achievements.join("\n")}`,
-    );
-  } else {
-    alert("Workout saved!");
-  }
     return true;
   }
 

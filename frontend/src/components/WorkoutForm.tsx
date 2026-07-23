@@ -63,64 +63,56 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
   }, []);
 
   async function handleSubmit(event: React.FormEvent) {
-  event.preventDefault();
+    event.preventDefault();
 
-  console.log("Workout form submitted");
-  console.log("Form values:", {
-    exerciseName,
-    sets,
-    reps,
-    weight,
-  });
+    const setsNumber = Number(sets);
+    const repsNumber = Number(reps);
+    const weightNumber = Number(weight);
 
-  const setsNumber = Number(sets);
-  const repsNumber = Number(reps);
-  const weightNumber = Number(weight);
-
-  if (!isValidWorkoutInput(exerciseName, setsNumber, repsNumber, weightNumber)) {
-    alert("Please enter a valid workout.");
-    return;
-  }
-
-  setIsSaving(true);
-
-  try {
-    const wasSaved = await onAddWorkout({
-      exerciseName,
-      sets: setsNumber,
-      reps: repsNumber,
-      weight: weightNumber,
-      date, 
-    });
-
-    if (!wasSaved) {
+    if (!isValidWorkoutInput(exerciseName, setsNumber, repsNumber, weightNumber)) {
+      alert("Please enter a valid workout.");
       return;
     }
 
-    const { error } = await supabase
-      .from("exercises")
-      .upsert([{ name: exerciseName }], { onConflict: "name" });
+    setIsSaving(true);
 
-    if (error) {
-      console.log("Exercise save error:", error.message);
-      return;
+    try {
+      const wasSaved = await onAddWorkout({
+        exerciseName,
+        sets: setsNumber,
+        reps: repsNumber,
+        weight: weightNumber,
+        date,
+      });
+
+      if (!wasSaved) {
+        return;
+      }
+
+      const { error } = await supabase
+        .from("exercises")
+        .upsert([{ name: exerciseName }], { onConflict: "name" });
+
+      if (error) {
+        console.error("Exercise save error:", error.message);
+        return;
+      }
+
+      setSuggestions((prev) =>
+        prev.includes(exerciseName) ? prev : [exerciseName, ...prev],
+      );
+
+      setExerciseName("");
+      setSets("");
+      setReps("");
+      setWeight("");
+      setDate(today);
+    } catch (err) {
+      console.error("Failed to save workout:", err);
+    } finally {
+      setIsSaving(false);
     }
-
-    setSuggestions((prev) =>
-      prev.includes(exerciseName) ? prev : [exerciseName, ...prev]
-    );
-
-    setExerciseName("");
-    setSets("");
-    setReps("");
-    setWeight("");
-    setDate(today);
-  } catch (err) {
-    console.error("Failed to save workout:", err);
-  } finally {
-    setIsSaving(false);
   }
-}
 
   return (
     <section className="card">
@@ -164,25 +156,25 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
         />
 
         <input
-         type="number"
-         placeholder="Weight (kg)"
-         value={weight}
-         onChange={(e) => setWeight(e.target.value)}
+          type="number"
+          placeholder="Weight (kg)"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
         />
 
         <label htmlFor="workout-date">Workout date</label>
         <input
-         id="workout-date"
-         type="date"
-         value={date}
-         max={today}
-         onChange={(event) => setDate(event.target.value)}
-         required
-/>
+          id="workout-date"
+          type="date"
+          value={date}
+          max={today}
+          onChange={(event) => setDate(event.target.value)}
+          required
+        />
 
-<button type="submit" disabled={isSaving}>
-  {isSaving ? "Saving..." : "Save Workout"}
-</button>
+        <button type="submit" disabled={isSaving}>
+          {isSaving ? "Saving..." : "Save Workout"}
+        </button>
       </form>
     </section>
   );

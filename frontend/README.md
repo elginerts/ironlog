@@ -1,6 +1,6 @@
 # IronLog
 
-IronLog is a workout-tracking web application designed to help users log workouts, monitor their progress and view workout activity shared by other users.
+IronLog is a workout-tracking web application for logging workouts, monitoring progress and viewing workout activity shared by other users.
 
 The application is built using React, TypeScript, Vite and Supabase.
 
@@ -22,9 +22,7 @@ Signed-in users can view their previous workout records retrieved from Supabase.
 
 ### Progress Tracking
 
-Users can review their workout progress over time.
-
-Current improvements planned for this feature include:
+Users can review workout progress over time, including:
 
 - Exercise-specific progress charts
 - Personal-record tracking
@@ -33,9 +31,11 @@ Current improvements planned for this feature include:
 
 ### Social Feed
 
-Users can view workout activities shared through the social feed.
+Users can view workout activity shared through the social feed. Shared workout posts display the poster's username through the associated Supabase profile.
 
-The feed will be improved to display usernames instead of raw user IDs.
+### Leaderboard
+
+Users can compare workout consistency and total training volume using aggregated workout data.
 
 ## Technology Stack
 
@@ -55,6 +55,7 @@ src/
 │   ├── WorkoutLog.tsx
 │   └── ...
 ├── utils/
+│   ├── personalRecord.ts
 │   ├── workoutUtils.ts
 │   └── workoutUtils.test.ts
 ├── test/
