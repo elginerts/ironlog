@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { supabase } from "../utils/supabase";
 
 interface LoginModalProps {
@@ -14,7 +14,6 @@ function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
   const [successMessage, setSuccessMessage] = useState("");
 
   async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
-
     event.preventDefault();
 
     setLoading(true);
@@ -33,15 +32,12 @@ function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
       return;
     }
 
-    console.log("Login data:", data);
     setSuccessMessage("Login successful!");
 
     if (data.user.email) {
       onLoginSuccess(data.user.email);
     }
-  } 
-
-
+  }
 
   return (
     <div className="modal-overlay">
@@ -78,7 +74,6 @@ function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
           <button className="modal-button" type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
-
         </form>
       </div>
     </div>

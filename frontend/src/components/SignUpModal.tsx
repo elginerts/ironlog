@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { supabase } from "../utils/supabase";
 
 interface SignUpModalProps {
@@ -14,15 +14,13 @@ function SignUpModal({ onClose }: SignUpModalProps) {
   const [username, setUsername] = useState("");
 
   async function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
-
     event.preventDefault();
 
     setLoading(true);
     setErrorMessage("");
     setSuccessMessage("");
 
-    // creates supabase auth account
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -38,12 +36,9 @@ function SignUpModal({ onClose }: SignUpModalProps) {
       return;
     }
 
-    console.log("Signup data:", data);
     setSuccessMessage("Account created! You may proceed to Login.");
     setLoading(false);
-  } 
-
-
+  }
 
   return (
     <div className="modal-overlay">
@@ -61,7 +56,7 @@ function SignUpModal({ onClose }: SignUpModalProps) {
             type="text"
             placeholder="Username"
             value={username}
-            onChange = {(event) => setUsername(event.target.value)}
+            onChange={(event) => setUsername(event.target.value)}
             required
           />
 
@@ -89,7 +84,6 @@ function SignUpModal({ onClose }: SignUpModalProps) {
           <button className="modal-button" type="submit" disabled={loading}>
             {loading ? "Signing Up..." : "Sign Up"}
           </button>
-
         </form>
       </div>
     </div>

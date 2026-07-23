@@ -13,8 +13,6 @@ body {
   min-height: 100vh;
 }
 
-/* Navbar */
-
 .navbar {
   height: 72px;
   padding: 0 64px;
@@ -58,15 +56,11 @@ body {
   font-weight: 700;
 }
 
-/* Main layout */
-
 main {
   max-width: 1150px;
   margin: 0 auto;
   padding: 64px 24px;
 }
-
-/* General cards */
 
 .card {
   background: white;
@@ -79,8 +73,6 @@ main {
 .card h2 {
   margin-top: 0;
 }
-
-/* Hero section */
 
 .hero {
   display: grid;
@@ -152,8 +144,6 @@ button:hover {
   margin-bottom: 20px;
 }
 
-/* Home workout preview */
-
 .workout-item {
   display: flex;
   justify-content: space-between;
@@ -172,8 +162,6 @@ button:hover {
 .workout-item strong {
   color: #c2410c;
 }
-
-/* Features section */
 
 .features {
   margin-top: 88px;
@@ -205,8 +193,6 @@ button:hover {
   color: #555;
   line-height: 1.5;
 }
-
-/* Modals */
 
 .modal-overlay {
   position: fixed;
@@ -278,8 +264,6 @@ button:hover {
   color: #c2410c;
 }
 
-/* Workout form */
-
 .workout-form {
   display: grid;
   gap: 12px;
@@ -291,8 +275,6 @@ button:hover {
   border-radius: 12px;
   font-size: 15px;
 }
-
-/* Workout log */
 
 .workout-list {
   display: grid;
@@ -321,8 +303,6 @@ button:hover {
   padding: 10px 16px;
   font-size: 14px;
 }
-
-/* Social feed */
 
 .feed-header {
   margin-bottom: 24px;
@@ -385,8 +365,6 @@ button:hover {
   margin: 0;
   color: #374151;
 }
-
-/* Responsive */
 
 @media (max-width: 800px) {
   .navbar {
