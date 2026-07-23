@@ -609,3 +609,30 @@ button:hover {
     padding: 18px 10px;
   }
 }
+
+.personal-record-badge {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #e2b93b;
+  border-radius: 12px;
+  background: #fff9e6;
+}
+
+.personal-record-badge strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.personal-record-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.personal-record-details span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+}

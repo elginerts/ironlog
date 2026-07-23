@@ -15,12 +15,37 @@ function WorkoutLog({ workouts, onShareWorkout}: WorkoutLogProps) {
       ) : (
         <div className="workout-list">
           {workouts.map((workout, index) => (
-            <div className="workout-card" key={index}>
+            <div className="workout-card" key={workout.id ?? index}>
               <h3>{workout.exerciseName}</h3>
               <p>{workout.date}</p>
               <p>
                 {workout.sets} sets × {workout.reps} reps @ {workout.weight}kg
               </p>
+
+              {workout.personalRecord &&
+                (workout.personalRecord.weightPR ||
+                  workout.personalRecord.repsPR ||
+                  workout.personalRecord.estimated1RMPR) && (
+                  <div className="personal-record-badge">
+                    <strong>🏆 Personal Record</strong>
+
+                    <div className="personal-record-details">
+                      {workout.personalRecord.weightPR && (
+                        <span>Weight PR</span>
+                      )}
+
+                      {workout.personalRecord.repsPR && (
+                        <span>Repetition PR</span>
+                      )}
+
+                      {workout.personalRecord.estimated1RMPR && (
+                        <span>
+                          Estimated 1RM: {workout.personalRecord.estimated1RM} kg
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
 
               <button 
                 type="button"

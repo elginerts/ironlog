@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { supabase } from "./utils/supabase";
+import { detectPersonalRecord, isAnyPersonalRecord, calculateEstimated1RM} from "./utils/PersonalRecord";
 
 import Navbar from "./components/Navbar";
 import SignUpModal from "./components/SignUpModal";
@@ -60,13 +61,80 @@ function App() {
       return;
     }
 
-    const formattedWorkouts: Workout[] = data.map((workout) => ({
-      exerciseName: workout.exercise_name,
-      sets: workout.sets,
-      reps: workout.reps,
-      weight: workout.weight,
-      date: workout.workout_date,
-    }));
+    const chronologicalWorkouts: Workout[] = [...data]
+      .sort(
+        (firstWorkout, secondWorkout) =>
+          new Date(firstWorkout.workout_date).getTime() -
+          new Date(secondWorkout.workout_date).getTime(),
+      )
+      .map((workout) => ({
+        id: workout.id,
+        exerciseName: workout.exercise_name,
+        sets: workout.sets,
+        reps: workout.reps,
+        weight: workout.weight,
+        date: workout.workout_date,
+      }));
+      const workoutsWithCurrentRecords = chronologicalWorkouts.map((workout) => {
+        const sameExerciseWorkouts = chronologicalWorkouts.filter(
+          (item) =>
+            item.exerciseName.trim().toLowerCase() ===
+            workout.exerciseName.trim().toLowerCase(),
+        );
+
+      const latestHighestWeightWorkout = [...sameExerciseWorkouts]
+        .filter(
+          (item) =>
+            Number(item.weight) ===
+            Math.max(
+              ...sameExerciseWorkouts.map((entry) => Number(entry.weight)),
+            ),
+        )
+      .at(-1);
+
+      const latestHighestRepsWorkout = [...sameExerciseWorkouts]
+        .filter(
+          (item) =>
+            Number(item.reps) ===
+            Math.max(
+              ...sameExerciseWorkouts.map((entry) => Number(entry.reps)),
+          ),
+      )
+      .at(-1);
+
+      const highestEstimated1RM = Math.max(
+        ...sameExerciseWorkouts.map((item) =>
+          calculateEstimated1RM(Number(item.weight), Number(item.reps)),
+        ),
+      );
+
+      const latestHighest1RMWorkout = [...sameExerciseWorkouts]
+        .filter(
+          (item) =>
+            calculateEstimated1RM(
+              Number(item.weight),
+              Number(item.reps),
+            ) === highestEstimated1RM,
+        )
+        .at(-1);
+
+      const estimated1RM = calculateEstimated1RM(
+        Number(workout.weight),
+        Number(workout.reps),
+      );
+
+      return {
+        ...workout,
+        personalRecord: {
+          weightPR: workout.id === latestHighestWeightWorkout?.id,
+          repsPR: workout.id === latestHighestRepsWorkout?.id,
+          estimated1RMPR: workout.id === latestHighest1RMWorkout?.id,
+          estimated1RM,
+        },
+      };
+    });
+
+const formattedWorkouts = workoutsWithCurrentRecords.reverse();
 
     setWorkouts(formattedWorkouts);
   }
@@ -113,6 +181,8 @@ function App() {
       return false;
     }
 
+    const personalRecord = detectPersonalRecord(workout, workouts);
+
     const { error } = await supabase.from("workouts").insert({
       user_id: user.id,
       exercise_name: workout.exerciseName,
@@ -129,7 +199,29 @@ function App() {
 
     await fetchWorkouts();
 
+    if (isAnyPersonalRecord(personalRecord)) {
+      const achievements: string[] = [];
+  
+    if (personalRecord.weightPR) {
+      achievements.push("Weight PR");
+    }
+    
+    if (personalRecord.repsPR) {
+      achievements.push("Repetition PR");
+    }
+
+    if (personalRecord.estimated1RMPR) {
+      achievements.push(
+        `Estimated 1RM PR: ${personalRecord.estimated1RM} kg`,
+      );
+    }
+
+    alert(
+      `Workout saved!\n\n🏆 New Personal Record!\n${achievements.join("\n")}`,
+    );
+  } else {
     alert("Workout saved!");
+  }
     return true;
   }
 
