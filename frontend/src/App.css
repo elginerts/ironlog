@@ -636,3 +636,147 @@ button:hover {
   font-size: 0.85rem;
   font-weight: 600;
 }
+
+.leaderboard-page {
+  width: min(1100px, 92%);
+  margin: 0 auto;
+  padding: 56px 0 90px;
+}
+
+.leaderboard-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.leaderboard-header h1 {
+  margin: 0 0 10px;
+  font-size: 2.7rem;
+}
+
+.leaderboard-header p {
+  max-width: 650px;
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.leaderboard-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.leaderboard-filter label {
+  font-weight: 600;
+}
+
+.leaderboard-filter select {
+  min-width: 230px;
+  padding: 11px 14px;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  background: white;
+  font-size: 0.95rem;
+}
+
+.leaderboard-card {
+  overflow: hidden;
+  border: 1px solid #ececec;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 90px minmax(220px, 1fr) 150px 200px;
+  align-items: center;
+  gap: 18px;
+  min-height: 76px;
+  padding: 18px 26px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.leaderboard-row:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-table-header {
+  min-height: auto;
+  background: #f7f7f7;
+  color: #666;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.leaderboard-rank {
+  font-size: 1.55rem;
+  font-weight: 700;
+}
+
+.leaderboard-row strong {
+  font-size: 1.05rem;
+}
+
+.leaderboard-row span:nth-child(3),
+.leaderboard-row span:nth-child(4) {
+  font-weight: 600;
+}
+
+.leaderboard-row:nth-child(2) {
+  background: #fffbea;
+}
+
+.leaderboard-row:nth-child(3) {
+  background: #fafafa;
+}
+
+.leaderboard-row:nth-child(4) {
+  background: #fff8f2;
+}
+
+@media (max-width: 800px) {
+  .leaderboard-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .leaderboard-filter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .leaderboard-filter select {
+    width: 100%;
+  }
+
+  .leaderboard-row {
+    grid-template-columns: 60px minmax(120px, 1fr) 90px;
+    padding: 16px;
+  }
+
+  .leaderboard-row span:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .leaderboard-page {
+    padding-top: 32px;
+  }
+
+  .leaderboard-header h1 {
+    font-size: 2.1rem;
+  }
+
+  .leaderboard-row {
+    grid-template-columns: 48px 1fr 70px;
+    gap: 10px;
+  }
+}
