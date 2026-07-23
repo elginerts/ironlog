@@ -1,60 +1,105 @@
-import type { Workout } from "./types";
+import { useState } from "react";
+import type { WorkoutSession } from "../services/workoutSessionsApi";
 
 type WorkoutLogProps = {
-  workouts: Workout[];
-  onShareWorkout: (workout: Workout) => Promise<boolean>;
+  sessions: WorkoutSession[];
+  isLoading: boolean;
 };
 
-function WorkoutLog({ workouts, onShareWorkout}: WorkoutLogProps) {
+function WorkoutLog({
+  sessions,
+  isLoading,
+}: WorkoutLogProps) {
+  const [expandedSessionId, setExpandedSessionId] = useState<
+    string | null
+  >(null);
+
+  function toggleSession(sessionId: string) {
+    setExpandedSessionId((currentId) =>
+      currentId === sessionId ? null : sessionId,
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <section className="card">
+        <h2>Workout Log</h2>
+        <p>Loading workout sessions...</p>
+      </section>
+    );
+  }
+
   return (
     <section className="card">
       <h2>Workout Log</h2>
 
-      {workouts.length === 0 ? (
-        <p>No workouts logged yet.</p>
+      {sessions.length === 0 ? (
+        <p>No workout sessions logged yet.</p>
       ) : (
-        <div className="workout-list">
-          {workouts.map((workout, index) => (
-            <div className="workout-card" key={workout.id ?? index}>
-              <h3>{workout.exerciseName}</h3>
-              <p>{workout.date}</p>
-              <p>
-                {workout.sets} sets × {workout.reps} reps @ {workout.weight}kg
-              </p>
+        <div className="workout-session-list">
+          {sessions.map((session) => {
+            const isExpanded =
+              expandedSessionId === session.id;
 
-              {workout.personalRecord &&
-                (workout.personalRecord.weightPR ||
-                  workout.personalRecord.repsPR ||
-                  workout.personalRecord.estimated1RMPR) && (
-                  <div className="personal-record-badge">
-                    <strong>🏆 Personal Record</strong>
+            return (
+              <div
+                className="workout-session-log-card"
+                key={session.id}
+              >
+                <button
+                  type="button"
+                  className="workout-session-header"
+                  onClick={() => toggleSession(session.id)}
+                  aria-expanded={isExpanded}
+                >
+                  <div>
+                    <h3>{session.title}</h3>
+                    <p>{session.workout_date}</p>
+                  </div>
 
-                    <div className="personal-record-details">
-                      {workout.personalRecord.weightPR && (
-                        <span>Weight PR</span>
-                      )}
+                  <div className="workout-session-summary">
+                    <span>
+                      {session.workout_exercises.length}{" "}
+                      {session.workout_exercises.length === 1
+                        ? "exercise"
+                        : "exercises"}
+                    </span>
 
-                      {workout.personalRecord.repsPR && (
-                        <span>Repetition PR</span>
-                      )}
+                    <span>{isExpanded ? "▲" : "▼"}</span>
+                  </div>
+                </button>
 
-                      {workout.personalRecord.estimated1RMPR && (
-                        <span>
-                          Estimated 1RM: {workout.personalRecord.estimated1RM} kg
-                        </span>
-                      )}
-                    </div>
+                {isExpanded && (
+                  <div className="workout-session-exercises">
+                    {session.workout_exercises.map(
+                      (exercise) => (
+                        <div
+                          className="session-log-exercise"
+                          key={exercise.id}
+                        >
+                          <strong>
+                            {exercise.exercise_name}
+                          </strong>
+
+                          <div className="session-log-stats">
+                            <span>
+                              {exercise.sets} sets
+                            </span>
+                            <span>
+                              {exercise.reps} reps
+                            </span>
+                            <span>
+                              {exercise.weight} kg
+                            </span>
+                          </div>
+                        </div>
+                      ),
+                    )}
                   </div>
                 )}
-
-              <button 
-                type="button"
-                onClick={() => {
-                  onShareWorkout(workout);}}>
-                Share to Feed
-              </button>              
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       )}
     </section>

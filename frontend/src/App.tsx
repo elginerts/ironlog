@@ -279,11 +279,7 @@ function App() {
   function renderPage() {
     if (currentPage === "workouts") {
       return (
-        <WorkoutsPage
-          workouts={workouts}
-          onAddWorkout={addWorkout}
-          onShareWorkout={shareWorkout}
-        />
+        <WorkoutsPage />
       );
     }
 
