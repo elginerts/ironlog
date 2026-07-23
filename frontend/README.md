@@ -46,18 +46,77 @@ Users can compare workout consistency and total training volume using aggregated
 - Vitest
 - React Testing Library
 
-## Project Structure
+## Setup Instructions
+
+### Prerequisites
+
+Before running the project, make sure you have installed:
+
+- Node.js
+- npm
+- Git
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/elginerts/ironlog.git
+```
+
+2. Navigate into the frontend folder:
+
+```bash
+cd ironlog/frontend
+```
+
+3. Install the required dependencies:
+
+```bash
+npm install
+```
+
+4. Create a `.env` file inside the `frontend` folder and add your Supabase credentials:
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+5. Start the development server:
+
+```bash
+npm run dev
+```
+
+6. Open the local URL shown in the terminal, usually:
 
 ```text
-src/
-├── components/
-│   ├── WorkoutForm.tsx
-│   ├── WorkoutLog.tsx
-│   └── ...
-├── utils/
-│   ├── personalRecord.ts
-│   ├── workoutUtils.ts
-│   └── workoutUtils.test.ts
-├── test/
-│   └── setup.ts
-└── App.tsx
+http://localhost:5173
+```
+
+## Testing
+
+Run the automated tests once:
+
+```bash
+npm run test:run
+```
+
+Run the tests in watch mode:
+
+```bash
+npm run test
+```
+
+Check the project for linting issues:
+
+```bash
+npm run lint
+```
+
+Create a production build:
+
+```bash
+npm run build
+```
