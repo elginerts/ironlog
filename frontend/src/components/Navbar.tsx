@@ -36,6 +36,14 @@ function Navbar({ currentPage, onPageChange }: NavbarProps) {
         >
           Feed
         </button>
+
+        <button
+          type="button"
+          className={currentPage === "leaderboard" ? "active" : ""}
+          onClick={() => onPageChange("leaderboard")}
+        >
+        Leaderboard
+        </button>
         
       </div>
     </nav>

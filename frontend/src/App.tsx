@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { supabase } from "./utils/supabase";
 import { detectPersonalRecord, isAnyPersonalRecord, calculateEstimated1RM} from "./utils/PersonalRecord";
+import LeaderboardPage from "./pages/LeaderboardPage";
 
 import Navbar from "./components/Navbar";
 import SignUpModal from "./components/SignUpModal";
@@ -291,6 +292,10 @@ const formattedWorkouts = workoutsWithCurrentRecords.reverse();
 
     if (currentPage === "feed") {
       return <FeedPage />;
+    }
+
+    if (currentPage === "leaderboard") {
+      return <LeaderboardPage />;
     }
 
     return (
