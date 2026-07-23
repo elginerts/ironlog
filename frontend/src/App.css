@@ -266,14 +266,48 @@ button:hover {
 
 .workout-form {
   display: grid;
-  gap: 12px;
+  gap: 18px;
+  text-align: left;
+}
+
+.workout-form label {
+  color: #374151;
+  font-weight: 700;
+  line-height: 1.4;
 }
 
 .workout-form input {
+  width: 100%;
   padding: 12px 14px;
   border: 1px solid #ddd;
   border-radius: 12px;
   font-size: 15px;
+}
+
+.session-field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.session-exercise-card {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.session-exercise-card h3 {
+  margin: 0;
+}
+
+.session-exercise-fields {
+  display: grid;
+  grid-template-columns: minmax(180px, 2fr) repeat(3, minmax(96px, 1fr));
+  gap: 12px;
+  align-items: start;
 }
 
 .workout-list {
@@ -404,6 +438,10 @@ button:hover {
     align-items: flex-start;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .session-exercise-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -564,6 +602,10 @@ button:hover {
 @media (max-width: 550px) {
   .progress-page {
     padding-top: 32px;
+  }
+
+  .session-exercise-fields {
+    grid-template-columns: 1fr;
   }
 
   .progress-page > h1 {
