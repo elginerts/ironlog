@@ -1,16 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import { supabase } from "./utils/supabase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { firebaseAuth } from "./utils/firebase";
 import {
   calculateEstimated1RM,
-  detectPersonalRecord,
-  isAnyPersonalRecord,
 } from "./utils/personalRecord";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import {
-  createWorkoutThroughApi,
   fetchWorkoutsFromApi,
 } from "./services/workoutApi";
 
@@ -176,90 +172,6 @@ function App() {
     };
   }, [userEmail]);
 
-  async function addWorkout(workout: Workout): Promise<boolean> {
-    if (!firebaseAuth.currentUser) {
-      alert("You must be logged in to save a workout.");
-      return false;
-    }
-
-    const personalRecord = detectPersonalRecord(workout, workouts);
-
-    try {
-      await createWorkoutThroughApi(workout);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to save workout.";
-
-      alert(message);
-      return false;
-    }
-
-    await fetchWorkouts();
-
-    if (isAnyPersonalRecord(personalRecord)) {
-      const achievements: string[] = [];
-
-      if (personalRecord.weightPR) {
-        achievements.push("Weight PR");
-      }
-
-      if (personalRecord.repsPR) {
-        achievements.push("Repetition PR");
-      }
-
-      if (personalRecord.estimated1RMPR) {
-        achievements.push(
-          `Estimated 1RM PR: ${personalRecord.estimated1RM} kg`,
-        );
-      }
-
-      alert(
-        `Workout saved!\n\n🏆 New Personal Record!\n${achievements.join("\n")}`,
-      );
-    } else {
-      alert("Workout saved!");
-    }
-
-    return true;
-  }
-
-  async function shareWorkout(workout: Workout): Promise<boolean> {
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError) {
-      alert(userError.message);
-      return false;
-    }
-
-    if (!user) {
-      alert("You must be logged in to share a workout.");
-      return false;
-    }
-
-    const { error } = await supabase.from("workout_posts").insert({
-      user_id: user.id,
-      exercise_name: workout.exerciseName,
-      sets: workout.sets,
-      reps: workout.reps,
-      weight: workout.weight,
-      workout_date: workout.date,
-      caption: "Shared my workout!",
-      visibility: "public",
-    });
-
-    if (error) {
-      alert(error.message);
-      return false;
-    }
-
-    alert("Workout shared to feed!");
-    return true;
-  }
 
   async function handleLogout() {
     try {
