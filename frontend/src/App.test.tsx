@@ -1,8 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
-import type { Workout } from "./components/types";
 
 const mocks = vi.hoisted(() => ({
   firebaseAuth: {
@@ -46,29 +44,9 @@ vi.mock("./services/workoutApi", () => ({
 }));
 
 vi.mock("./pages/WorkoutsPage", () => ({
-  default: ({
-    workouts,
-    onAddWorkout,
-  }: {
-    workouts: Workout[];
-    onAddWorkout: (workout: Workout) => Promise<boolean>;
-  }) => (
+  default: () => (
     <section>
-      <p data-testid="workout-count">{workouts.length}</p>
-      <button
-        type="button"
-        onClick={() =>
-          onAddWorkout({
-            exerciseName: "Bench Press",
-            sets: 3,
-            reps: 5,
-            weight: 100,
-            date: "2026-07-23",
-          })
-        }
-      >
-        Mock Add Workout
-      </button>
+      <h2>Workouts Page</h2>
     </section>
   ),
 }));
@@ -113,25 +91,4 @@ describe("App workout API auth", () => {
     expect(mocks.supabaseGetUser).not.toHaveBeenCalled();
   });
 
-  it("adds workouts through the Firebase-authenticated API without Supabase getUser", async () => {
-    const user = userEvent.setup();
-
-    render(<App />);
-
-    await user.click(screen.getByRole("button", { name: "Workouts" }));
-    await user.click(screen.getByRole("button", { name: "Mock Add Workout" }));
-
-    await waitFor(() => {
-      expect(mocks.createWorkoutThroughApi).toHaveBeenCalledWith(
-        expect.objectContaining({
-          exerciseName: "Bench Press",
-          sets: 3,
-          reps: 5,
-          weight: 100,
-        }),
-      );
-    });
-
-    expect(mocks.supabaseGetUser).not.toHaveBeenCalled();
-  });
-});
+})

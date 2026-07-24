@@ -1,14 +1,26 @@
 import { useState } from "react";
-import type { WorkoutSession } from "../services/workoutSessionsApi";
+import type {
+  WorkoutSession,
+  WorkoutSessionExercise,
+} from "../services/workoutSessionsApi";
 
 type WorkoutLogProps = {
   sessions: WorkoutSession[];
   isLoading: boolean;
+  onShareSession: (
+    session: WorkoutSession,
+  ) => Promise<void>;
+  onShareExercise: (
+    session: WorkoutSession,
+    exercise: WorkoutSessionExercise,
+  ) => Promise<void>;
 };
 
 function WorkoutLog({
   sessions,
   isLoading,
+  onShareSession,
+  onShareExercise,
 }: WorkoutLogProps) {
   const [expandedSessionId, setExpandedSessionId] = useState<
     string | null
@@ -69,6 +81,16 @@ function WorkoutLog({
                   </div>
                 </button>
 
+                <button
+                  type="button"
+                  className="share-session-button"
+                  onClick={() => {
+                    void onShareSession(session);
+                  }}
+                >
+                  Share Session
+                </button>
+
                 {isExpanded && (
                   <div className="workout-session-exercises">
                     {session.workout_exercises.map(
@@ -92,6 +114,19 @@ function WorkoutLog({
                               {exercise.weight} kg
                             </span>
                           </div>
+
+                          <button
+                            type="button"
+                            className="share-exercise-button"
+                            onClick={() => {
+                              void onShareExercise(
+                                session,
+                                exercise,
+                              );
+                            }}
+                          >
+                            Share Exercise
+                          </button>
                         </div>
                       ),
                     )}
