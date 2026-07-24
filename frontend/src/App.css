@@ -310,29 +310,93 @@ button:hover {
   align-items: start;
 }
 
-.workout-list {
-  display: grid;
-  gap: 12px;
+.workout-session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
   margin-top: 16px;
 }
 
-.workout-card {
-  background: white;
-  border: 1px solid #eee;
-  padding: 16px;
+.workout-session-log-card {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
   border-radius: 16px;
+  background: white;
 }
 
-.workout-card h3 {
+.workout-session-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  border: none;
+  border-radius: 0;
+  background: #c2410c;
+  color: white;
+  text-align: left;
+}
+
+.workout-session-header:hover {
+  background: #9a3412;
+}
+
+.workout-session-header h3 {
   margin: 0 0 6px;
 }
 
-.workout-card p {
-  margin: 4px 0;
+.workout-session-header p {
+  margin: 0;
+}
+
+.workout-session-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.share-session-button {
+  width: 100%;
+  padding: 12px 24px;
+  border-radius: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+  background: #9a3412;
+  text-align: left;
+}
+
+.share-session-button:hover {
+  background: #7c2d12;
+}
+
+.workout-session-exercises {
+  width: 100%;
+  padding: 8px 24px 20px;
+  background: white;
+}
+
+.session-log-exercise {
+  width: 100%;
+  padding: 18px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.session-log-exercise:last-child {
+  border-bottom: none;
+}
+
+.session-log-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 8px;
   color: #555;
 }
 
-.share-button {
+.share-exercise-button {
   margin-top: 12px;
   padding: 10px 16px;
   font-size: 14px;
@@ -442,6 +506,20 @@ button:hover {
 
   .session-exercise-fields {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workout-session-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workout-session-summary {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .workout-session-exercises {
+    padding: 8px 18px 18px;
   }
 }
 
