@@ -140,7 +140,7 @@ router.post(
       response.status(201).json({
         session: {
           ...session,
-          exercises: savedExercises ?? [],
+          workout_exercises: savedExercises ?? [],
         },
       });
     } catch (error) {

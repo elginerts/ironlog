@@ -13,7 +13,7 @@ const mocks = vi.hoisted(() => ({
   updateProfile: vi.fn(),
   supabaseGetUser: vi.fn(),
   supabaseFrom: vi.fn(),
-  fetchWorkoutsFromApi: vi.fn(),
+  fetchWorkoutSessions: vi.fn(),
   createWorkoutThroughApi: vi.fn(),
 }));
 
@@ -38,9 +38,8 @@ vi.mock("./utils/supabase", () => ({
   },
 }));
 
-vi.mock("./services/workoutApi", () => ({
-  fetchWorkoutsFromApi: mocks.fetchWorkoutsFromApi,
-  createWorkoutThroughApi: mocks.createWorkoutThroughApi,
+vi.mock("./services/workoutSessionsApi", () => ({
+  fetchWorkoutSessions: mocks.fetchWorkoutSessions,
 }));
 
 vi.mock("./pages/WorkoutsPage", () => ({
@@ -61,14 +60,22 @@ describe("App workout API auth", () => {
       callback(mocks.firebaseAuth.currentUser);
       return vi.fn();
     });
-    mocks.fetchWorkoutsFromApi.mockResolvedValue([
+    mocks.fetchWorkoutSessions.mockResolvedValue([
       {
-        id: "workout-1",
-        exercise_name: "Squat",
-        sets: 3,
-        reps: 5,
-        weight: 120,
+        id: "session-1",
+        title: "Leg Day",
         workout_date: "2026-07-22",
+        created_at: "2026-07-22T00:00:00.000Z",
+        workout_exercises: [
+          {
+            id: "workout-1",
+            exercise_name: "Squat",
+            exercise_order: 0,
+            sets: 3,
+            reps: 5,
+            weight: 120,
+          },
+        ],
       },
     ]);
     mocks.createWorkoutThroughApi.mockResolvedValue({
@@ -85,7 +92,7 @@ describe("App workout API auth", () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(mocks.fetchWorkoutsFromApi).toHaveBeenCalled();
+      expect(mocks.fetchWorkoutSessions).toHaveBeenCalled();
     });
 
     expect(mocks.supabaseGetUser).not.toHaveBeenCalled();

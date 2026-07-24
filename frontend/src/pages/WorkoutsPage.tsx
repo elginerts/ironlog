@@ -7,7 +7,13 @@ import {
   type WorkoutSessionExercise,
 } from "../services/workoutSessionsApi";
 
-function WorkoutsPage() {
+type WorkoutsPageProps = {
+  onSessionsChanged?: () => void;
+};
+
+function WorkoutsPage({
+  onSessionsChanged,
+}: WorkoutsPageProps) {
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -31,8 +37,8 @@ function WorkoutsPage() {
   }, []);
 
   useEffect(() => {
-    void loadSessions();
-  }, [loadSessions]);
+  void loadSessions()
+}, [loadSessions])
 
   async function shareWorkoutSession(
     session: WorkoutSession,
@@ -92,7 +98,12 @@ function WorkoutsPage() {
 
   return (
     <div>
-      <WorkoutSessionForm onSessionSaved={loadSessions} />
+      <WorkoutSessionForm 
+        onSessionSaved={async () => {
+          await loadSessions();
+          onSessionsChanged?.();
+        }}
+      />
 
       {errorMessage && (
         <p className="error-message">{errorMessage}</p>

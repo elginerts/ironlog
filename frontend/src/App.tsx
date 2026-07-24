@@ -7,8 +7,8 @@ import {
 } from "./utils/personalRecord";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import {
-  fetchWorkoutsFromApi,
-} from "./services/workoutApi";
+  fetchWorkoutSessions,
+} from "./services/workoutSessionsApi";
 
 import Navbar from "./components/Navbar";
 import SignUpModal from "./components/SignUpModal";
@@ -51,10 +51,10 @@ function App() {
       return;
     }
 
-    let data;
+    let sessions;
 
     try {
-      data = await fetchWorkoutsFromApi();
+      sessions = await fetchWorkoutSessions();
     } catch (error) {
       const message =
         error instanceof Error
@@ -69,20 +69,22 @@ function App() {
       return;
     }
 
-    const chronologicalWorkouts: Workout[] = [...data]
-      .sort(
-        (firstWorkout, secondWorkout) =>
-          new Date(firstWorkout.workout_date).getTime() -
-          new Date(secondWorkout.workout_date).getTime(),
-      )
-      .map((workout) => ({
-        id: workout.id,
-        exerciseName: workout.exercise_name,
-        sets: workout.sets,
-        reps: workout.reps,
-        weight: workout.weight,
-        date: workout.workout_date,
-      }));
+    const chronologicalWorkouts: Workout[] = sessions
+      .flatMap((session) =>
+        session.workout_exercises.map((exercise) => ({
+          id: exercise.id,
+          exerciseName: exercise.exercise_name,
+          sets: exercise.sets,
+          reps: exercise.reps,
+          weight: exercise.weight,
+          date: session.workout_date,
+        })),
+    )
+    .sort(
+      (firstWorkout, secondWorkout) =>
+        new Date(firstWorkout.date).getTime() -
+        new Date(secondWorkout.date).getTime(),
+    );
 
     const workoutsWithCurrentRecords = chronologicalWorkouts.map((workout) => {
       const sameExerciseWorkouts = chronologicalWorkouts.filter(
@@ -191,7 +193,7 @@ function App() {
   function renderPage() {
     if (currentPage === "workouts") {
       return (
-        <WorkoutsPage />
+        <WorkoutsPage onSessionsChanged={() => void fetchWorkouts()} />
       );
     }
 
