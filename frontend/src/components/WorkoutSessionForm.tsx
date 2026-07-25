@@ -111,8 +111,14 @@ function WorkoutSessionForm({
   }
 
   return (
-    <section className="card">
-      <h2>Log a Workout Session</h2>
+    <section className="card workout-builder-card">
+      <div className="section-heading">
+        <div>
+          <span className="section-kicker">New session</span>
+          <h2>Log a Workout Session</h2>
+        </div>
+        <p>Add one or more exercises before saving.</p>
+      </div>
 
       <form
         className="workout-form"

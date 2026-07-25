@@ -88,6 +88,7 @@ function LeaderboardPage() {
     <div className="leaderboard-page">
       <div className="leaderboard-header">
         <div>
+          <span className="page-kicker">Community</span>
           <h1>Leaderboard</h1>
           <p>
             Community rankings based on workout consistency and total

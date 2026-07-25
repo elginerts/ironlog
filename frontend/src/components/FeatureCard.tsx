@@ -1,11 +1,13 @@
 interface FeatureCardProps {
+  number: string;
   title: string;
   description: string;
 }
 
-function FeatureCard({ title, description }: FeatureCardProps) {
+function FeatureCard({ number, title, description }: FeatureCardProps) {
   return (
     <div className="feature-card">
+      <span className="feature-number">{number}</span>
       <h3>{title}</h3>
       <p>{description}</p>
     </div>

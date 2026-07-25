@@ -35,7 +35,7 @@ function WorkoutLog({
 
   if (isLoading) {
     return (
-      <section className="card">
+      <section className="card workout-log-card">
         <h2>Workout Log</h2>
         <p>Loading workout sessions...</p>
       </section>
@@ -43,8 +43,14 @@ function WorkoutLog({
   }
 
   return (
-    <section className="card">
-      <h2>Workout Log</h2>
+    <section className="card workout-log-card">
+      <div className="section-heading">
+        <div>
+          <span className="section-kicker">History</span>
+          <h2>Workout Log</h2>
+        </div>
+        <p>{sessions.length} sessions recorded</p>
+      </div>
 
       {sessions.length === 0 ? (
         <p>No workout sessions logged yet.</p>
@@ -89,7 +95,7 @@ function WorkoutLog({
                     void onShareSession(session);
                   }}
                 >
-                  Share Session
+                  Post to Feed
                 </button>
 
                 {isExpanded && (

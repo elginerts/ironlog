@@ -4,6 +4,8 @@ import {
   type WorkoutSession,
   type WorkoutSessionExercise,
 } from "../services/workoutSessionsApi";
+import { publishSession } from "../services/socialApi";
+import { isAnyPersonalRecord } from "../utils/personalRecord";
 
 type WorkoutsPageProps = {
   sessions: WorkoutSession[];
@@ -22,30 +24,33 @@ function WorkoutsPage({
   async function shareWorkoutSession(
     session: WorkoutSession,
   ): Promise<void> {
-    const exerciseSummary = session.workout_exercises
-      .map(
-        (exercise) =>
-          `${exercise.exercise_name}: ${exercise.sets} sets × ${exercise.reps} reps at ${exercise.weight} kg`,
-      )
-      .join("\n");
+    const caption = window.prompt(
+      "Add an optional caption for your workout:",
+      "",
+    );
 
-    const shareText = `${session.title}
-    ${session.workout_date}
-    
-    ${exerciseSummary}`;
+    if (caption === null) return;
 
     try {
-      if (navigator.share) {
-        await navigator.share({
-          title: session.title,
-          text: shareText,
-        });
-      } else {
-        await navigator.clipboard.writeText(shareText);
-        alert("Workout session copied to clipboard.");
-      }
+      const hasPersonalRecord = session.workout_exercises.some(
+        (exercise) =>
+          exercise.personalRecord &&
+          isAnyPersonalRecord(exercise.personalRecord),
+      );
+
+      await publishSession(
+        session.id,
+        session.workout_date,
+        caption,
+        hasPersonalRecord,
+      );
+      alert("Workout posted to the social feed.");
     } catch (error) {
-      console.error("Unable to share workout session:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Unable to post workout.",
+      );
     }
   }
 
@@ -76,7 +81,13 @@ function WorkoutsPage({
   }
 
   return (
-    <div>
+    <div className="workouts-page">
+      <div className="page-heading">
+        <span className="page-kicker">Training</span>
+        <h1>Workout Sessions</h1>
+        <p>Build today&apos;s session and review your recent training.</p>
+      </div>
+
       <WorkoutSessionForm onSessionSaved={onReload} />
 
       {errorMessage && (

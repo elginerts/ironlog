@@ -9,6 +9,9 @@ import {
   YAxis,
 } from "recharts";
 import type { Workout } from "../components/types";
+import { calculateEstimated1RM } from "../utils/personalRecord";
+
+type ChartMetric = "weight" | "estimated1RM";
 
 type ProgressPageProps = {
   workouts: Workout[];
@@ -25,19 +28,28 @@ function ProgressPage({ workouts, userEmail }: ProgressPageProps) {
   );
 
   const [selectedExercise, setSelectedExercise] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [chartMetric, setChartMetric] =
+    useState<ChartMetric>("weight");
 
   const activeExercise =
     selectedExercise || exerciseOptions[0] || "";
 
   const exerciseWorkouts = useMemo(() => {
     return workouts
-      .filter((workout) => workout.exerciseName === activeExercise)
+      .filter(
+        (workout) =>
+          workout.exerciseName === activeExercise &&
+          (!startDate || workout.date >= startDate) &&
+          (!endDate || workout.date <= endDate),
+      )
       .sort(
         (firstWorkout, secondWorkout) =>
           new Date(firstWorkout.date).getTime() -
           new Date(secondWorkout.date).getTime(),
       );
-  }, [workouts, activeExercise]);
+  }, [workouts, activeExercise, startDate, endDate]);
 
   const chartData = exerciseWorkouts.map((workout) => ({
     date: new Date(workout.date).toLocaleDateString("en-SG", {
@@ -45,6 +57,10 @@ function ProgressPage({ workouts, userEmail }: ProgressPageProps) {
       month: "short",
     }),
     weight: Number(workout.weight),
+    estimated1RM: calculateEstimated1RM(
+      Number(workout.weight),
+      Number(workout.reps),
+    ),
     volume:
       Number(workout.sets) *
       Number(workout.reps) *
@@ -98,10 +114,13 @@ function ProgressPage({ workouts, userEmail }: ProgressPageProps) {
 
   return (
     <div className="progress-page">
-      <h1>Progress Analytics</h1>
-      <p>Track your performance and improvement over time.</p>
+      <div className="page-heading">
+        <span className="page-kicker">Analytics</span>
+        <h1>Progress Analytics</h1>
+        <p>Track your performance and improvement over time.</p>
+      </div>
 
-      <div className="progress-filters">
+      <div className="progress-filters filter-panel">
         <label htmlFor="exercise-filter">Select exercise:</label>
 
         <select
@@ -114,6 +133,36 @@ function ProgressPage({ workouts, userEmail }: ProgressPageProps) {
               {exercise}
             </option>
           ))}
+        </select>
+
+        <label htmlFor="start-date-filter">From:</label>
+        <input
+          id="start-date-filter"
+          type="date"
+          value={startDate}
+          max={endDate || undefined}
+          onChange={(event) => setStartDate(event.target.value)}
+        />
+
+        <label htmlFor="end-date-filter">To:</label>
+        <input
+          id="end-date-filter"
+          type="date"
+          value={endDate}
+          min={startDate || undefined}
+          onChange={(event) => setEndDate(event.target.value)}
+        />
+
+        <label htmlFor="chart-metric">Chart:</label>
+        <select
+          id="chart-metric"
+          value={chartMetric}
+          onChange={(event) =>
+            setChartMetric(event.target.value as ChartMetric)
+          }
+        >
+          <option value="weight">Weight</option>
+          <option value="estimated1RM">Estimated 1RM</option>
         </select>
       </div>
 
@@ -144,7 +193,8 @@ function ProgressPage({ workouts, userEmail }: ProgressPageProps) {
 
       <div className="progress-chart-card">
         <h2>
-          {activeExercise.charAt(0).toUpperCase() + activeExercise.slice(1)} Weight Progress
+          {activeExercise.charAt(0).toUpperCase() + activeExercise.slice(1)}{" "}
+          {chartMetric === "weight" ? "Weight" : "Estimated 1RM"} Progress
           </h2>
 
         {chartData.length < 2 && (
@@ -166,12 +216,15 @@ function ProgressPage({ workouts, userEmail }: ProgressPageProps) {
               />
 
               <Tooltip
-                formatter={(value) => [`${value} kg`, "Weight"]}
+                formatter={(value) => [
+                  `${value} kg`,
+                  chartMetric === "weight" ? "Weight" : "Estimated 1RM",
+                ]}
               />
 
               <Line
                 type="monotone"
-                dataKey="weight"
+                dataKey={chartMetric}
                 strokeWidth={3}
                 activeDot={{ r: 6 }}
               />
