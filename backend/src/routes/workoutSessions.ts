@@ -21,23 +21,27 @@ type CreateSessionBody = {
 const router = Router();
 
 async function getProfileId(request: AuthenticatedRequest) {
-  const firebaseUid = request.firebaseUser?.uid;
+  const userId = request.user?.id;
 
-  if (!firebaseUid) {
+  if (!userId) {
     throw new Error("Authenticated user could not be identified.");
   }
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("profiles")
-    .select("id")
-    .eq("firebase_uid", firebaseUid)
-    .single();
+    .upsert(
+      {
+        id: userId,
+        username: request.user?.email?.split("@")[0] ?? "IronLog User",
+      },
+      { onConflict: "id", ignoreDuplicates: true },
+    );
 
-  if (error || !data) {
-    throw new Error("No linked profile was found.");
+  if (error) {
+    throw new Error(`Unable to ensure the user profile exists: ${error.message}`);
   }
 
-  return data.id;
+  return userId;
 }
 
 router.post(

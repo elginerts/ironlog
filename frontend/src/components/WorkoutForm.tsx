@@ -89,15 +89,6 @@ function WorkoutForm({ onAddWorkout }: WorkoutFormProps) {
         return;
       }
 
-      const { error } = await supabase
-        .from("exercises")
-        .upsert([{ name: exerciseName }], { onConflict: "name" });
-
-      if (error) {
-        console.error("Exercise save error:", error.message);
-        return;
-      }
-
       setSuggestions((prev) =>
         prev.includes(exerciseName) ? prev : [exerciseName, ...prev],
       );

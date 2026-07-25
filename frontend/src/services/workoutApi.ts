@@ -1,20 +1,18 @@
 import type { Workout } from "../components/types";
-import { firebaseAuth } from "../utils/firebase";
+import { supabase } from "../utils/supabase";
 
 const apiUrl =
   import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 async function getAuthorizationHeader() {
-  const user = firebaseAuth.currentUser;
+  const { data, error } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (error || !data.session) {
     throw new Error("You must be logged in.");
   }
 
-  const token = await user.getIdToken();
-
   return {
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${data.session.access_token}`,
     "Content-Type": "application/json",
   };
 }

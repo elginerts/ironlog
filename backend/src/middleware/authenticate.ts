@@ -1,9 +1,9 @@
 import type { NextFunction, Request, Response } from "express";
-import { firebaseAuth } from "../firebaseAdmin.js";
+import { supabase } from "../supabase.js";
 
 export type AuthenticatedRequest = Request & {
-  firebaseUser?: {
-    uid: string;
+  user?: {
+    id: string;
     email?: string;
   };
 };
@@ -25,16 +25,20 @@ export async function authenticate(
   const token = authorizationHeader.replace("Bearer ", "").trim();
 
   try {
-    const decodedToken = await firebaseAuth.verifyIdToken(token);
+    const { data, error } = await supabase.auth.getUser(token);
 
-    request.firebaseUser = {
-      uid: decodedToken.uid,
-      email: decodedToken.email,
+    if (error || !data.user) {
+      throw error ?? new Error("User not found.");
+    }
+
+    request.user = {
+      id: data.user.id,
+      email: data.user.email,
     };
 
     next();
   } catch (error) {
-    console.error("Firebase token verification failed:", error);
+    console.error("Supabase token verification failed:", error);
 
     response.status(401).json({
       message: "Invalid or expired authentication token.",

@@ -31,7 +31,7 @@ function WorkoutsPage() {
   }, []);
 
   useEffect(() => {
-    void loadSessions();
+    void Promise.resolve().then(loadSessions);
   }, [loadSessions]);
 
   async function shareWorkoutSession(
