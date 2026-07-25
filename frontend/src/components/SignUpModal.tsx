@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { firebaseAuth } from "../utils/firebase";
+import { supabase } from "../utils/supabase";
 
 interface SignUpModalProps {
   onClose: () => void;
@@ -22,17 +21,18 @@ function SignUpModal({ onClose }: SignUpModalProps) {
     setSuccessMessage("");
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        firebaseAuth,
-        email,
-        password
-      );
-
-      await updateProfile(userCredential.user, {
-        displayName: username.trim(),
+      const { error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          data: {
+            username: username.trim(),
+          },
+        },
       });
+      if (error) throw error;
 
-      setSuccessMessage("Account created! You may proceed to Login.");
+      setSuccessMessage("Account created! Check your email to confirm your account.");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Unable to create account.";

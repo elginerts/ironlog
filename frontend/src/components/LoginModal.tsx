@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { firebaseAuth } from "../utils/firebase";
+import { supabase } from "../utils/supabase";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -22,16 +21,16 @@ function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
     setSuccessMessage("");
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        firebaseAuth,
-        email,
-        password
-      );
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) throw error;
 
       setSuccessMessage("Login successful!");
 
-      if (userCredential.user.email) {
-        onLoginSuccess(userCredential.user.email);
+      if (data.user.email) {
+        onLoginSuccess(data.user.email);
       }
     } catch (error) {
       const message =
@@ -40,6 +39,27 @@ function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handlePasswordReset() {
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    if (!email.trim()) {
+      setErrorMessage("Enter your email address first.");
+      return;
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: window.location.origin,
+    });
+
+    if (error) {
+      setErrorMessage(error.message);
+      return;
+    }
+
+    setSuccessMessage("Password reset instructions have been sent.");
   }
 
   return (
@@ -76,6 +96,9 @@ function LoginModal({ onClose, onLoginSuccess }: LoginModalProps) {
 
           <button className="modal-button" type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
+          </button>
+          <button type="button" onClick={handlePasswordReset} disabled={loading}>
+            Forgot password?
           </button>
         </form>
       </div>

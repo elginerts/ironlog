@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { firebaseAuth } from "./utils/firebase";
+import { supabase } from "./utils/supabase";
 import {
   calculateEstimated1RM,
 } from "./utils/personalRecord";
@@ -32,11 +31,15 @@ function App() {
   const isMountedRef = useRef(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-      setUserEmail(user?.email ?? null);
+    void supabase.auth.getSession().then(({ data }) => {
+      setUserEmail(data.session?.user.email ?? null);
     });
 
-    return unsubscribe;
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserEmail(session?.user.email ?? null);
+    });
+
+    return () => data.subscription.unsubscribe();
   }, []);
 
   async function fetchWorkouts({
@@ -46,7 +49,8 @@ function App() {
       return;
     }
 
-    if (!firebaseAuth.currentUser) {
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) {
       setWorkouts([]);
       return;
     }
@@ -175,7 +179,8 @@ function App() {
 
   async function handleLogout() {
     try {
-      await signOut(firebaseAuth);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
 
       setUserEmail(null);
       setWorkouts([]);

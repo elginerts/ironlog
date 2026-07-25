@@ -13,131 +13,38 @@ type CreateWorkoutBody = {
   workoutDate?: string;
 };
 
-type ProfileRow = {
-  id: string;
-  firebase_uid: string | null;
-  username: string | null;
-};
-
 const router = Router();
 
-async function getOrCreateProfileId(
+async function ensureProfile(
   request: AuthenticatedRequest,
 ): Promise<string> {
-  const firebaseUid = request.firebaseUser?.uid;
-  const email = request.firebaseUser?.email?.trim().toLowerCase();
+  const userId = request.user?.id;
+  const email = request.user?.email?.trim().toLowerCase();
 
-  if (!firebaseUid) {
-    throw new Error("Firebase user could not be identified.");
+  if (!userId) {
+    throw new Error("Authenticated user could not be identified.");
   }
 
-  const { data: linkedProfile, error: linkedProfileError } =
-    await supabase
-      .from("profiles")
-      .select("id, firebase_uid, username")
-      .eq("firebase_uid", firebaseUid)
-      .maybeSingle<ProfileRow>();
-
-  if (linkedProfileError) {
-    throw new Error(
-      `Unable to check linked profile: ${linkedProfileError.message}`,
-    );
-  }
-
-  if (linkedProfile) {
-    return linkedProfile.id;
-  }
-
-  if (!email) {
-    throw new Error(
-      "The authenticated Firebase account does not have an email address.",
-    );
-  }
-
-  const { data: existingUsersData, error: existingUsersError } =
-    await supabase.auth.admin.listUsers({
-      page: 1,
-      perPage: 1000,
-    });
-
-  if (existingUsersError) {
-    throw new Error(
-      `Unable to search existing users: ${existingUsersError.message}`,
-    );
-  }
-
-  const existingSupabaseUser = existingUsersData.users.find(
-    (user) => user.email?.trim().toLowerCase() === email,
-  );
-
-  if (existingSupabaseUser) {
-    const defaultUsername =
-      existingSupabaseUser.user_metadata?.username ??
-      existingSupabaseUser.user_metadata?.display_name ??
-      email.split("@")[0];
-
-    const { error: profileUpsertError } = await supabase
-      .from("profiles")
-      .upsert(
-        {
-          id: existingSupabaseUser.id,
-          firebase_uid: firebaseUid,
-          username: defaultUsername,
-        },
-        {
-          onConflict: "id",
-        },
-      );
-
-    if (profileUpsertError) {
-      throw new Error(
-        `Unable to link existing profile: ${profileUpsertError.message}`,
-      );
-    }
-
-    return existingSupabaseUser.id;
-  }
-
-  const defaultUsername = email.split("@")[0];
-
-  const { data: createdUserData, error: createUserError } =
-    await supabase.auth.admin.createUser({
-      email,
-      email_confirm: true,
-      user_metadata: {
-        username: defaultUsername,
-      },
-    });
-
-  if (createUserError || !createdUserData.user) {
-    throw new Error(
-      createUserError?.message ??
-        "Unable to create the Supabase database user.",
-    );
-  }
-
-  const supabaseUserId = createdUserData.user.id;
-
-  const { error: profileCreateError } = await supabase
+  const { error } = await supabase
     .from("profiles")
     .upsert(
       {
-        id: supabaseUserId,
-        firebase_uid: firebaseUid,
-        username: defaultUsername,
+        id: userId,
+        username: email?.split("@")[0] ?? "IronLog User",
       },
       {
         onConflict: "id",
+        ignoreDuplicates: true,
       },
     );
 
-  if (profileCreateError) {
+  if (error) {
     throw new Error(
-      `Unable to create the linked profile: ${profileCreateError.message}`,
+      `Unable to ensure the user profile exists: ${error.message}`,
     );
   }
 
-  return supabaseUserId;
+  return userId;
 }
 
 router.get(
@@ -148,7 +55,7 @@ router.get(
     response,
   ) => {
     try {
-      const userId = await getOrCreateProfileId(request);
+      const userId = await ensureProfile(request);
 
       const { data, error } = await supabase
         .from("workouts")
@@ -230,7 +137,7 @@ router.post(
     }
 
     try {
-      const userId = await getOrCreateProfileId(request);
+      const userId = await ensureProfile(request);
 
       const { data, error } = await supabase
         .from("workouts")

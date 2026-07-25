@@ -3,36 +3,20 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 
 const mocks = vi.hoisted(() => ({
-  firebaseAuth: {
-    currentUser: null as null | { email: string | null },
-  },
-  onAuthStateChanged: vi.fn(),
-  signOut: vi.fn(),
-  signInWithEmailAndPassword: vi.fn(),
-  createUserWithEmailAndPassword: vi.fn(),
-  updateProfile: vi.fn(),
-  supabaseGetUser: vi.fn(),
+  supabaseGetSession: vi.fn(),
+  supabaseOnAuthStateChange: vi.fn(),
+  supabaseSignOut: vi.fn(),
   supabaseFrom: vi.fn(),
   fetchWorkoutsFromApi: vi.fn(),
   createWorkoutThroughApi: vi.fn(),
 }));
 
-vi.mock("firebase/auth", () => ({
-  onAuthStateChanged: mocks.onAuthStateChanged,
-  signOut: mocks.signOut,
-  signInWithEmailAndPassword: mocks.signInWithEmailAndPassword,
-  createUserWithEmailAndPassword: mocks.createUserWithEmailAndPassword,
-  updateProfile: mocks.updateProfile,
-}));
-
-vi.mock("./utils/firebase", () => ({
-  firebaseAuth: mocks.firebaseAuth,
-}));
-
 vi.mock("./utils/supabase", () => ({
   supabase: {
     auth: {
-      getUser: mocks.supabaseGetUser,
+      getSession: mocks.supabaseGetSession,
+      onAuthStateChange: mocks.supabaseOnAuthStateChange,
+      signOut: mocks.supabaseSignOut,
     },
     from: mocks.supabaseFrom,
   },
@@ -56,10 +40,19 @@ describe("App workout API auth", () => {
     vi.clearAllMocks();
     vi.stubGlobal("alert", vi.fn());
 
-    mocks.firebaseAuth.currentUser = { email: "athlete@example.com" };
-    mocks.onAuthStateChanged.mockImplementation((_auth, callback) => {
-      callback(mocks.firebaseAuth.currentUser);
-      return vi.fn();
+    mocks.supabaseGetSession.mockResolvedValue({
+      data: {
+        session: {
+          access_token: "test-token",
+          user: { email: "athlete@example.com" },
+        },
+      },
+      error: null,
+    });
+    mocks.supabaseOnAuthStateChange.mockReturnValue({
+      data: {
+        subscription: { unsubscribe: vi.fn() },
+      },
     });
     mocks.fetchWorkoutsFromApi.mockResolvedValue([
       {
@@ -81,14 +74,14 @@ describe("App workout API auth", () => {
     });
   });
 
-  it("fetches workouts through the Firebase-authenticated API without Supabase getUser", async () => {
+  it("fetches workouts through the Supabase-authenticated API", async () => {
     render(<App />);
 
     await waitFor(() => {
       expect(mocks.fetchWorkoutsFromApi).toHaveBeenCalled();
     });
 
-    expect(mocks.supabaseGetUser).not.toHaveBeenCalled();
+    expect(mocks.supabaseGetSession).toHaveBeenCalled();
   });
 
 })

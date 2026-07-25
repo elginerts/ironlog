@@ -2,17 +2,17 @@ import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseSecretKey) {
+if (!supabaseUrl || !supabaseServiceRoleKey) {
   throw new Error(
-    "SUPABASE_URL and SUPABASE_SECRET_KEY must be provided.",
+    "SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be provided.",
   );
 }
 
 export const supabase = createClient(
   supabaseUrl,
-  supabaseSecretKey,
+  supabaseServiceRoleKey,
   {
     auth: {
       persistSession: false,
