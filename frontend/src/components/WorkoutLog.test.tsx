@@ -75,7 +75,7 @@ describe("WorkoutLog", () => {
     );
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Share Session" }),
+      screen.getByRole("button", { name: "Post to Feed" }),
     );
 
     expect(mockShareSession).toHaveBeenCalledWith(

@@ -17,6 +17,7 @@ import {
   attachPersonalRecordsToSessions,
   flattenWorkoutSessions,
 } from "./utils/sessionWorkouts";
+import { calculateWorkoutStreak } from "./utils/workoutStreak";
 
 type LoadSessionsOptions = {
   shouldUpdate?: () => boolean;
@@ -82,6 +83,10 @@ function App() {
     () => attachPersonalRecordsToSessions(sessions, workouts),
     [sessions, workouts],
   );
+  const workoutStreak = useMemo(
+    () => calculateWorkoutStreak(sessions),
+    [sessions],
+  );
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -140,6 +145,7 @@ function App() {
       <HomePage
         userEmail={userEmail}
         workouts={workouts}
+        workoutStreak={workoutStreak}
         onSignUpClick={() => setShowSignUp(true)}
         onLoginClick={() => setShowLogin(true)}
         onLogoutClick={handleLogout}
