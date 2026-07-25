@@ -3,6 +3,7 @@ import type {
   WorkoutSession,
   WorkoutSessionExercise,
 } from "../services/workoutSessionsApi";
+import { isAnyPersonalRecord } from "../utils/personalRecord";
 
 type WorkoutLogProps = {
   sessions: WorkoutSession[];
@@ -113,6 +114,21 @@ function WorkoutLog({
                             <span>
                               {exercise.weight} kg
                             </span>
+                            {exercise.personalRecord &&
+                              isAnyPersonalRecord(exercise.personalRecord) && (
+                                <span className="pr-badge">
+                                  PR
+                                  {exercise.personalRecord.weightPR
+                                    ? " · Weight"
+                                    : ""}
+                                  {exercise.personalRecord.repsPR
+                                    ? " · Reps"
+                                    : ""}
+                                  {exercise.personalRecord.estimated1RMPR
+                                    ? " · Estimated 1RM"
+                                    : ""}
+                                </span>
+                              )}
                           </div>
 
                           <button

@@ -11,7 +11,6 @@ After rollout, compare these counts with the backup:
 
 ```sql
 select 'profiles' entity, count(*) from public.profiles
-union all select 'workouts', count(*) from public.workouts
 union all select 'workout_sessions', count(*) from public.workout_sessions
 union all select 'workout_exercises', count(*) from public.workout_exercises
 union all select 'workout_posts', count(*) from public.workout_posts;

@@ -1,4 +1,5 @@
 import { supabase } from "../utils/supabase";
+import type { PersonalRecord } from "../components/types";
 
 export type WorkoutSessionExerciseInput = {
   exerciseName: string;
@@ -20,6 +21,7 @@ export type WorkoutSessionExercise = {
   sets: number;
   reps: number;
   weight: number;
+  personalRecord?: PersonalRecord;
 };
 
 export type WorkoutSession = {

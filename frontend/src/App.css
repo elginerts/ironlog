@@ -396,6 +396,15 @@ button:hover {
   color: #555;
 }
 
+.pr-badge {
+  color: #7a4b00;
+  background: #fff1bf;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .share-exercise-button {
   margin-top: 12px;
   padding: 10px 16px;

@@ -1,24 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
-import { supabase } from "./utils/supabase";
-import {
-  calculateEstimated1RM,
-} from "./utils/personalRecord";
-import LeaderboardPage from "./pages/LeaderboardPage";
-import {
-  fetchWorkoutsFromApi,
-} from "./services/workoutApi";
-
 import Navbar from "./components/Navbar";
 import SignUpModal from "./components/SignUpModal";
 import LoginModal from "./components/LoginModal";
-import type { Workout } from "./components/types";
 import HomePage from "./pages/HomePage";
 import WorkoutsPage from "./pages/WorkoutsPage";
 import ProgressPage from "./pages/ProgressPage";
 import FeedPage from "./pages/FeedPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import {
+  fetchWorkoutSessions,
+  type WorkoutSession,
+} from "./services/workoutSessionsApi";
+import { supabase } from "./utils/supabase";
+import {
+  attachPersonalRecordsToSessions,
+  flattenWorkoutSessions,
+} from "./utils/sessionWorkouts";
 
-type FetchWorkoutsOptions = {
+type LoadSessionsOptions = {
   shouldUpdate?: () => boolean;
 };
 
@@ -26,7 +26,9 @@ function App() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
+  const [sessions, setSessions] = useState<WorkoutSession[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [sessionsError, setSessionsError] = useState("");
   const [currentPage, setCurrentPage] = useState<string>("home");
   const isMountedRef = useRef(false);
 
@@ -42,117 +44,47 @@ function App() {
     return () => data.subscription.unsubscribe();
   }, []);
 
-  async function fetchWorkouts({
+  const loadSessions = useCallback(async ({
     shouldUpdate = () => isMountedRef.current,
-  }: FetchWorkoutsOptions = {}) {
-    if (!shouldUpdate()) {
+  }: LoadSessionsOptions = {}) => {
+    if (!shouldUpdate()) return;
+
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      setSessions([]);
       return;
     }
 
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData.session) {
-      setWorkouts([]);
-      return;
-    }
-
-    let data;
+    setSessionsLoading(true);
+    setSessionsError("");
 
     try {
-      data = await fetchWorkoutsFromApi();
+      const loadedSessions = await fetchWorkoutSessions();
+      if (shouldUpdate()) setSessions(loadedSessions);
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to retrieve workouts.";
-
-      alert(message);
-      return;
+      if (shouldUpdate()) {
+        setSessionsError(
+          error instanceof Error
+            ? error.message
+            : "Unable to retrieve workout sessions.",
+        );
+      }
+    } finally {
+      if (shouldUpdate()) setSessionsLoading(false);
     }
+  }, []);
 
-    if (!shouldUpdate()) {
-      return;
-    }
-
-    const chronologicalWorkouts: Workout[] = [...data]
-      .sort(
-        (firstWorkout, secondWorkout) =>
-          new Date(firstWorkout.workout_date).getTime() -
-          new Date(secondWorkout.workout_date).getTime(),
-      )
-      .map((workout) => ({
-        id: workout.id,
-        exerciseName: workout.exercise_name,
-        sets: workout.sets,
-        reps: workout.reps,
-        weight: workout.weight,
-        date: workout.workout_date,
-      }));
-
-    const workoutsWithCurrentRecords = chronologicalWorkouts.map((workout) => {
-      const sameExerciseWorkouts = chronologicalWorkouts.filter(
-        (item) =>
-          item.exerciseName.trim().toLowerCase() ===
-          workout.exerciseName.trim().toLowerCase(),
-      );
-
-      const latestHighestWeightWorkout = [...sameExerciseWorkouts]
-        .filter(
-          (item) =>
-            Number(item.weight) ===
-            Math.max(
-              ...sameExerciseWorkouts.map((entry) => Number(entry.weight)),
-            ),
-        )
-        .at(-1);
-
-      const latestHighestRepsWorkout = [...sameExerciseWorkouts]
-        .filter(
-          (item) =>
-            Number(item.reps) ===
-            Math.max(...sameExerciseWorkouts.map((entry) => Number(entry.reps))),
-        )
-        .at(-1);
-
-      const highestEstimated1RM = Math.max(
-        ...sameExerciseWorkouts.map((item) =>
-          calculateEstimated1RM(Number(item.weight), Number(item.reps)),
-        ),
-      );
-
-      const latestHighest1RMWorkout = [...sameExerciseWorkouts]
-        .filter(
-          (item) =>
-            calculateEstimated1RM(
-              Number(item.weight),
-              Number(item.reps),
-            ) === highestEstimated1RM,
-        )
-        .at(-1);
-
-      const estimated1RM = calculateEstimated1RM(
-        Number(workout.weight),
-        Number(workout.reps),
-      );
-
-      return {
-        ...workout,
-        personalRecord: {
-          weightPR: workout.id === latestHighestWeightWorkout?.id,
-          repsPR: workout.id === latestHighestRepsWorkout?.id,
-          estimated1RMPR: workout.id === latestHighest1RMWorkout?.id,
-          estimated1RM,
-        },
-      };
-    });
-
-    const formattedWorkouts = workoutsWithCurrentRecords.reverse();
-
-    setWorkouts(formattedWorkouts);
-  }
+  const workouts = useMemo(
+    () => flattenWorkoutSessions(sessions),
+    [sessions],
+  );
+  const sessionsWithRecords = useMemo(
+    () => attachPersonalRecordsToSessions(sessions, workouts),
+    [sessions, workouts],
+  );
 
   useEffect(() => {
     isMountedRef.current = true;
-
     return () => {
       isMountedRef.current = false;
     };
@@ -162,20 +94,17 @@ function App() {
     let isCurrentRequest = true;
 
     void Promise.resolve().then(() => {
-      if (!isCurrentRequest) {
-        return;
+      if (isCurrentRequest) {
+        void loadSessions({
+          shouldUpdate: () => isCurrentRequest && isMountedRef.current,
+        });
       }
-
-      void fetchWorkouts({
-        shouldUpdate: () => isCurrentRequest && isMountedRef.current,
-      });
     });
 
     return () => {
       isCurrentRequest = false;
     };
-  }, [userEmail]);
-
+  }, [userEmail, loadSessions]);
 
   async function handleLogout() {
     try {
@@ -183,34 +112,29 @@ function App() {
       if (error) throw error;
 
       setUserEmail(null);
-      setWorkouts([]);
+      setSessions([]);
       setCurrentPage("home");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Unable to log out.";
-
-      alert(message);
+      alert(error instanceof Error ? error.message : "Unable to log out.");
     }
   }
 
   function renderPage() {
     if (currentPage === "workouts") {
       return (
-        <WorkoutsPage />
+        <WorkoutsPage
+          sessions={sessionsWithRecords}
+          isLoading={sessionsLoading}
+          errorMessage={sessionsError}
+          onReload={loadSessions}
+        />
       );
     }
-
     if (currentPage === "progress") {
       return <ProgressPage workouts={workouts} userEmail={userEmail} />;
     }
-
-    if (currentPage === "feed") {
-      return <FeedPage />;
-    }
-
-    if (currentPage === "leaderboard") {
-      return <LeaderboardPage />;
-    }
+    if (currentPage === "feed") return <FeedPage />;
+    if (currentPage === "leaderboard") return <LeaderboardPage />;
 
     return (
       <HomePage
@@ -226,11 +150,8 @@ function App() {
   return (
     <div className="app">
       <Navbar currentPage={currentPage} onPageChange={setCurrentPage} />
-
       <main>{renderPage()}</main>
-
       {showSignUp && <SignUpModal onClose={() => setShowSignUp(false)} />}
-
       {showLogin && (
         <LoginModal
           onClose={() => setShowLogin(false)}
