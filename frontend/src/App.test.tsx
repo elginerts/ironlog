@@ -7,8 +7,7 @@ const mocks = vi.hoisted(() => ({
   supabaseOnAuthStateChange: vi.fn(),
   supabaseSignOut: vi.fn(),
   supabaseFrom: vi.fn(),
-  fetchWorkoutsFromApi: vi.fn(),
-  createWorkoutThroughApi: vi.fn(),
+  fetchWorkoutSessions: vi.fn(),
 }));
 
 vi.mock("./utils/supabase", () => ({
@@ -22,9 +21,8 @@ vi.mock("./utils/supabase", () => ({
   },
 }));
 
-vi.mock("./services/workoutApi", () => ({
-  fetchWorkoutsFromApi: mocks.fetchWorkoutsFromApi,
-  createWorkoutThroughApi: mocks.createWorkoutThroughApi,
+vi.mock("./services/workoutSessionsApi", () => ({
+  fetchWorkoutSessions: mocks.fetchWorkoutSessions,
 }));
 
 vi.mock("./pages/WorkoutsPage", () => ({
@@ -54,31 +52,31 @@ describe("App workout API auth", () => {
         subscription: { unsubscribe: vi.fn() },
       },
     });
-    mocks.fetchWorkoutsFromApi.mockResolvedValue([
+    mocks.fetchWorkoutSessions.mockResolvedValue([
       {
-        id: "workout-1",
-        exercise_name: "Squat",
-        sets: 3,
-        reps: 5,
-        weight: 120,
+        id: "session-1",
+        title: "Leg Day",
         workout_date: "2026-07-22",
+        created_at: "2026-07-22T10:00:00Z",
+        workout_exercises: [
+          {
+            id: "exercise-1",
+            exercise_name: "Squat",
+            exercise_order: 1,
+            sets: 3,
+            reps: 5,
+            weight: 120,
+          },
+        ],
       },
     ]);
-    mocks.createWorkoutThroughApi.mockResolvedValue({
-      id: "workout-2",
-      exercise_name: "Bench Press",
-      sets: 3,
-      reps: 5,
-      weight: 100,
-      workout_date: "2026-07-23",
-    });
   });
 
-  it("fetches workouts through the Supabase-authenticated API", async () => {
+  it("fetches workout sessions through the authenticated API", async () => {
     render(<App />);
 
     await waitFor(() => {
-      expect(mocks.fetchWorkoutsFromApi).toHaveBeenCalled();
+      expect(mocks.fetchWorkoutSessions).toHaveBeenCalled();
     });
 
     expect(mocks.supabaseGetSession).toHaveBeenCalled();

@@ -1,38 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
 import WorkoutLog from "../components/WorkoutLog";
 import WorkoutSessionForm from "../components/WorkoutSessionForm";
 import {
-  fetchWorkoutSessions,
   type WorkoutSession,
   type WorkoutSessionExercise,
 } from "../services/workoutSessionsApi";
 
-function WorkoutsPage() {
-  const [sessions, setSessions] = useState<WorkoutSession[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+type WorkoutsPageProps = {
+  sessions: WorkoutSession[];
+  isLoading: boolean;
+  errorMessage: string;
+  onReload: () => Promise<void>;
+};
 
-  const loadSessions = useCallback(async () => {
-    setIsLoading(true);
-    setErrorMessage("");
-
-    try {
-      const loadedSessions = await fetchWorkoutSessions();
-      setSessions(loadedSessions);
-    } catch (error) {
-      setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : "Unable to load workout sessions.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void Promise.resolve().then(loadSessions);
-  }, [loadSessions]);
+function WorkoutsPage({
+  sessions,
+  isLoading,
+  errorMessage,
+  onReload,
+}: WorkoutsPageProps) {
 
   async function shareWorkoutSession(
     session: WorkoutSession,
@@ -92,7 +77,7 @@ function WorkoutsPage() {
 
   return (
     <div>
-      <WorkoutSessionForm onSessionSaved={loadSessions} />
+      <WorkoutSessionForm onSessionSaved={onReload} />
 
       {errorMessage && (
         <p className="error-message">{errorMessage}</p>

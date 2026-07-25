@@ -7,13 +7,6 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create table if not exists public.workouts (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references public.profiles(id) on delete cascade,
-  exercise_name text not null, sets integer not null check (sets > 0),
-  reps integer not null check (reps > 0), weight numeric not null check (weight >= 0),
-  workout_date date not null, created_at timestamptz not null default now()
-);
 create table if not exists public.workout_sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
@@ -42,7 +35,6 @@ create table if not exists public.exercises (
   name text not null unique, created_at timestamptz not null default now()
 );
 
-create index if not exists workouts_user_date_idx on public.workouts (user_id, workout_date desc, created_at desc);
 create index if not exists workout_sessions_user_date_idx on public.workout_sessions (user_id, workout_date desc, created_at desc);
 create index if not exists workout_exercises_session_order_idx on public.workout_exercises (session_id, exercise_order);
 create index if not exists workout_posts_public_created_idx on public.workout_posts (created_at desc) where visibility = 'public';
@@ -71,8 +63,6 @@ from auth.users u on conflict (id) do nothing;
 
 alter table public.profiles enable row level security;
 alter table public.profiles force row level security;
-alter table public.workouts enable row level security;
-alter table public.workouts force row level security;
 alter table public.workout_sessions enable row level security;
 alter table public.workout_sessions force row level security;
 alter table public.workout_exercises enable row level security;
@@ -91,7 +81,7 @@ begin
     from pg_policies
     where schemaname = 'public'
       and tablename in (
-        'profiles', 'workouts', 'workout_sessions',
+        'profiles', 'workout_sessions',
         'workout_exercises', 'workout_posts', 'exercises'
       )
   loop
@@ -108,15 +98,6 @@ create policy "profiles_public_read" on public.profiles for select to anon, auth
 drop policy if exists "profiles_owner_update" on public.profiles;
 create policy "profiles_owner_update" on public.profiles for update to authenticated
 using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
-
-drop policy if exists "workouts_owner_select" on public.workouts;
-create policy "workouts_owner_select" on public.workouts for select to authenticated using ((select auth.uid()) = user_id);
-drop policy if exists "workouts_owner_insert" on public.workouts;
-create policy "workouts_owner_insert" on public.workouts for insert to authenticated with check ((select auth.uid()) = user_id);
-drop policy if exists "workouts_owner_update" on public.workouts;
-create policy "workouts_owner_update" on public.workouts for update to authenticated using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
-drop policy if exists "workouts_owner_delete" on public.workouts;
-create policy "workouts_owner_delete" on public.workouts for delete to authenticated using ((select auth.uid()) = user_id);
 
 drop policy if exists "sessions_owner_all" on public.workout_sessions;
 create policy "sessions_owner_all" on public.workout_sessions for all to authenticated
@@ -153,7 +134,7 @@ revoke all on public.profiles from anon, authenticated;
 grant select (id, username) on public.profiles to anon, authenticated;
 grant update (username) on public.profiles to authenticated;
 grant select on public.exercises to anon, authenticated;
-grant select, insert, update, delete on public.workouts, public.workout_sessions, public.workout_exercises to authenticated;
+grant select, insert, update, delete on public.workout_sessions, public.workout_exercises to authenticated;
 grant select on public.workout_posts to anon;
 grant select, insert, update, delete on public.workout_posts to authenticated;
 
@@ -161,9 +142,11 @@ create or replace function public.get_workout_leaderboard()
 returns table (user_id uuid, username text, workout_count bigint, total_volume numeric)
 language sql stable security definer set search_path = ''
 as $$
-  select p.id, p.username, count(w.id),
-    coalesce(sum(w.sets * w.reps * w.weight), 0)
-  from public.profiles p left join public.workouts w on w.user_id = p.id
+  select p.id, p.username, count(distinct s.id),
+    coalesce(sum(e.sets * e.reps * e.weight), 0)
+  from public.profiles p
+  left join public.workout_sessions s on s.user_id = p.id
+  left join public.workout_exercises e on e.session_id = s.id
   group by p.id, p.username;
 $$;
 revoke all on function public.get_workout_leaderboard() from public;
